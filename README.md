@@ -1,1 +1,2 @@
 # Akademia-Programowania
+First push
