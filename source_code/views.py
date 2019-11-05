@@ -1,6 +1,7 @@
 from app import app
 import flask
 from flask import request
+from models import User, Database
 @app.route("/")
 def index():
     return "<h1>Hello world</h1>"+"<h3> You are on index site </h3>"+"<p> Welcome to Akademia Programowania </p>"
@@ -30,6 +31,8 @@ def registered():
         surname = request.form["lname"]
         email = request.form["email"]
         password = request.form["password"]
-        return "Witaj" + name + " " + surname + " " + email + " " + password
+        u = User(name, surname, email, password)
+        Database.add_user(Database, u)
+        return "Gratulacje"
     else:
         return flask.redirect('/')
