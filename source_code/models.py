@@ -57,6 +57,7 @@ class Database(object):
         admin.email = user_data[2]
         admin.password = user_data[3]
         admin.active = user_data[4]
+        cnx.close()
         return admin
 
 #This method returns user data when name given
