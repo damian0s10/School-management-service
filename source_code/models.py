@@ -7,7 +7,7 @@ class Database(object):
     password = 'database'
     database = 'database'
 
-#This method establish connection to database  
+#This method establish connection to database. 
     def connect(self):
         cnx = connect(user=Database.user,
                       host=Database.host,
