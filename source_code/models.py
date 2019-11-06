@@ -78,6 +78,22 @@ class Database(object):
         cnx.close()
         return user
 
+    def get_user_by_email(self,email):
+        cnx = Database.connect(self)
+        cursor = cnx.cursor()
+        query = "SELECT firstName, pass FROM users WHERE email= %s"
+        cursor.execute(query, (email,) )
+        results = cursor.fetchone()
+        if(results):
+            user = User()
+            user.first_name = results[0]
+            user.password = results[1]
+            cnx.close()
+            return user
+        else:
+            cnx.close()
+            return None
+
 
         
 class User(object):
