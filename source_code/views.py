@@ -1,8 +1,9 @@
 from app import app
 import flask
-from flask import request, session, render_template
+from flask import request, session, render_template, g
 from models import User, Database
 from passlib.hash import pbkdf2_sha256
+
 
 @app.route("/")
 def index():
@@ -15,18 +16,24 @@ def register():
 @app.route("/login")
 def login():
     return render_template('login.html')
-    
+
+@app.before_request
+def before_request():
+    g.user = None
+    if 'user' in session:
+        g.user = session['user']   
 
 @app.route("/logged", methods=["GET", "POST"])
 def logged():
     if request.method == "POST":
+        session.pop('user', None)
         email = request.form["email"]
         password = request.form["pass"]
         user = Database.get_user_by_email(Database,email)
         if(user):
             if(pbkdf2_sha256.verify(password, user.password)):
-                return "Jesteś zalogowany jako " + user.first_name + \
-                "<a href='/logout'>Wyloguj</a>"
+                session['user'] = email
+                return "Jesteś zalogowany jako" + user.first_name + "<a href='/logout'>Wyloguj</a>"
             else:
                 return """Podałeś nieprawidłowe hasło
                         <a href='/login'>Powrót</a>"""
@@ -39,6 +46,7 @@ def logged():
 
 @app.route("/logout")
 def logout():
+    session.pop('user', None)
     return flask.redirect('/')
 
 @app.route("/registered", methods=["GET", "POST"])
