@@ -4,11 +4,8 @@ from flask import request
 from models import User, Database
 from passlib.hash import pbkdf2_sha256
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
-    if request.method == "POST":
-        return "<h1>Jestes zalogowany</h1>"
-    else:
         return """<h1>Hello world</h1>
                 <h3> You are on index site </h3>
                 <p> Welcome to Akademia Programowania </p>
@@ -64,13 +61,18 @@ def registered():
         name = request.form["fname"]
         surname = request.form["lname"]
         email = request.form["email"]
-        password = pbkdf2_sha256.hash(request.form["password"])
-        u = User()
-        u.first_name = name
-        u.last_name = surname
-        u.email = email
-        u.password = password
-        Database.add_user(Database, u)
-        return "Utworzyłeś konto <button><a href='login'>Zaloguj się</a></button> "
+        isAvailable = Database.get_user_by_email(Database, email)
+        if(isAvailable):
+            return "Konto o tym adresie email juz istnieje <button><a href='/register'>Spróbuj ponownie</a></button> "
+        else: 
+            password = pbkdf2_sha256.hash(request.form["password"])
+            u = User()
+            u.first_name = name
+            u.last_name = surname
+            u.email = email
+            u.password = password
+            Database.add_user(Database, u)
+            return "Utworzyłeś konto <button><a href='/login'>Zaloguj się</a></button> "
+            
     else:
         return flask.redirect('/')
