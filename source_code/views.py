@@ -1,35 +1,21 @@
 from app import app
 import flask
-from flask import request
+from flask import request, session, render_template
 from models import User, Database
 from passlib.hash import pbkdf2_sha256
 
 @app.route("/")
 def index():
-        return """<h1>Hello world</h1>
-                <h3> You are on index site </h3>
-                <p> Welcome to Akademia Programowania </p>
-                <button><a href='login'>Zaloguj</a></button>
-                <button><a href='register'>Zarejestruj się</a></button>"""
+    return render_template('index.html')
    
 @app.route("/register", methods=["GET", "POST"])
 def register():
-        return """ <form action='/registered' method="POST"> 
-                First name: <input type='text' name='fname' required><br>
-                Last name: <input type='text' name='lname' required><br>
-                Email: <input type='email' name='email' required><br>
-                Password: <input type='password' name='password' required><br>
-                <label><input type="checkbox" required> Akceptuje regulamin</label>
-                <input type='submit' value='Submit'>
-                </form> """
+    return render_template('register.html')
 
 @app.route("/login")
 def login():
-    return """ <form action='/logged' method="POST"> 
-                Login: <input type='text' name='email' required><br>
-                Hasło: <input type='password' name='pass' required><br>
-                <input type='submit' value='Zaloguj'>
-                </form> """
+    return render_template('login.html')
+    
 
 @app.route("/logged", methods=["GET", "POST"])
 def logged():
