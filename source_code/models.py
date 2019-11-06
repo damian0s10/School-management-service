@@ -9,14 +9,15 @@ class Database(object):
 
 #This method establish connection to database  
     def connect(self):
-        cnx = connect(user=self.user,
-                      host=self.host,
-                      password=self.password,
-                      database=self.database,)
+        cnx = connect(user=Database.user,
+                      host=Database.host,
+                      password=Database.password,
+                      database=Database.database,)
+        return cnx
 
 #This method adds user to database
     def add_user(self, user_data):
-        cnx = Database.connect()
+        cnx = Database.connect(self)
         cursor = cnx.cursor()
         insert_query = "INSERT INTO users(firstName,lastName, email, pass, active) VALUES(%s,%s,%s,%s,%s)"
         cursor.execute(insert_query,
@@ -24,7 +25,7 @@ class Database(object):
                        user_data.last_name,
                        user_data.email,
                        user_data.password,
-                       0))
+                       1))
         cnx.commit()
         cnx.close()
 #This method adds admin to administrators when name given
@@ -86,16 +87,14 @@ class User(object):
         self.last_name = None
         self.email = None
         self.password = None
-        self.active = False
+        self.active = True
     
 class Administrator(User):
     def __init__(self):
         super(Administrator,self).__init__()
-        self.user_id = None
         self.admin_id = None
         
-
-        
+   
 
 
 

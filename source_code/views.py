@@ -31,7 +31,11 @@ def registered():
         surname = request.form["lname"]
         email = request.form["email"]
         password = request.form["password"]
-        u = User(name, surname, email, password)
+        u = User()
+        u.first_name = name
+        u.last_name = surname
+        u.email = email
+        u.password = password
         Database.add_user(Database, u)
         return "Gratulacje"
     else:
