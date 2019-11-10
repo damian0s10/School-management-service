@@ -29,11 +29,11 @@ class Database(object):
         cnx.commit()
         cnx.close()
 #This method adds admin to administrators when name given
-    def add_admin(self, ident):
+    def add_admin(self, email):
         cnx = Database.connect(self)
         cursor = cnx.cursor()
-        get_user_promoted_query="SELECT userId FROM users WHERE firstName = %s"
-        cursor.execute(get_user_promoted_query, (ident,))
+        get_user_promoted_query="SELECT userId FROM users WHERE email = %s"
+        cursor.execute(get_user_promoted_query, (email,))
         promoted_id = cursor.fetchone()
         insert_admin_query = "INSERT INTO administrators(userId) VALUES(%s)"
         cursor.execute(insert_admin_query, (promoted_id[0],))
