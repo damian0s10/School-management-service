@@ -94,8 +94,19 @@ class Database(object):
             cnx.close()
             return None
 
+    def get_students_by_group(self, groupId):
+        cnx = Database.connect(self)
+        cursor = cnx.cursor()
+        query = "SELECT userId FROM students WHERE studentId = (SELECT studentId FROM matches WHERE groupId = %s)"
+        cursor.execute(query, (groupId,))
+        students = cursor.fetchall()
+        if(students):
+            for i in range(len(students)):
+                print(students[i], end=" ")
+        cnx.close()
 
-        
+Database.get_students_by_group(Database,1)
+
 class User(object):
     def __init__(self):
         self.user_id = None
@@ -110,7 +121,15 @@ class Administrator(User):
         super(Administrator,self).__init__()
         self.admin_id = None
         
-   
+class Teacher(User):
+    def __init__(self):
+        super(Teacher, self).__init__()
+        self.teacher_id = None
+
+class Student(User):
+    def __init__(self):
+        super(Student, self).__init__()
+        self.student_id = None
 
 
 
