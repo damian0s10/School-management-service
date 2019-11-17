@@ -62,7 +62,7 @@ lessons='''
     teacherId int NOT NULL,
     groupId int NOT NULL,
     classroom varchar(5) NOT NULL,
-    datevValue date NOT NULL,
+    dateValue date NOT NULL,
     timeValue time NOT NULL,
     PRIMARY KEY(lessonId),
     FOREIGN KEY(subjectId) REFERENCES subjects(subjectId),
