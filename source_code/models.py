@@ -21,8 +21,8 @@ class Database(object):
         cursor = cnx.cursor()
         insert_query = "INSERT INTO users(firstName,lastName, email, pass, active) VALUES(%s,%s,%s,%s,%s)"
         cursor.execute(insert_query,
-                      (user_data.first_name,
-                       user_data.last_name,
+                      (user_data.firstName,
+                       user_data.lastName,
                        user_data.email,
                        user_data.password,
                        1))
@@ -40,54 +40,113 @@ class Database(object):
         cnx.commit()
         cnx.close()
 
-#This method returns admin data when userId
-    def get_admin_by_ident(self, ident):
+    def add_student(self, userId):
         cnx = Database.connect(self)
         cursor = cnx.cursor()
-        get_admin_query = "SELECT adminId, userId FROM administrators WHERE userId = %s"
-        get_user_query = "SELECT firstName, lastName, email, pass, active FROM users WHERE userId = %s"
-        cursor.execute(get_admin_query, (ident,))
-        admin_data = cursor.fetchone()
-        cursor.execute(get_user_query, (ident,))
-        user_data = cursor.fetchone()
-        admin = Administrator()
-        admin.admin_id = admin_data[0]
-        admin.user_id = admin_data[1]
-        admin.first_name = user_data[0]
-        admin.last_name = user_data[1]
-        admin.email = user_data[2]
-        admin.password = user_data[3]
-        admin.active = user_data[4]
+        query = "INSERT INTO students(userId) VALUES(%s)"
+        cursor.execute(query, (userId,))
+        cnx.commit()
         cnx.close()
-        return admin
+
+    def add_student_to_group(self, groupId, studentId):
+        cnx = Database.connect(self)
+        cursor = cnx.cursor()
+        query = "INSERT INTO matches(groupId, studentId) VALUES(%s,%s)"
+        cursor.execute(query, (groupId, studentId,))
+        cnx.commit()
+        cnx.close()
+
+    def add_teacher(self, userId):
+        cnx = Database.connect(self)
+        cursor = cnx.cursor()
+        query = "INSERT INTO teachers(userId) VALUES(%s)"
+        cursor.execute(query, (userId,))
+        cnx.commit()
+        cnx.close()
+
+    def add_group(self, groupId=None, active=True):
+        cnx = Database.connect(self)
+        cursor = cnx.cursor()
+        insert_query="INSERT INTO groups(active) VALUES(%s)"
+        cursor.execute(insert_query, (active,))
+        cnx.commit()
+        cnx.close()
+#This method returns admin data when email given
+    def get_admin_by_email(self, email):
+        cnx = Database.connect(self)
+        cursor = cnx.cursor()
+        get_admin_query = '''SELECT administrators.adminId,
+                                    administrators.userId,
+                                    users.firstName,
+                                    users.lastName,
+                                    users.email,
+                                    users.pass,
+                                    users.active
+                             FROM administrators INNER JOIN users
+                             ON administrators.userId=users.userId
+                             WHERE users.email = %s'''
+        cursor.execute(get_admin_query, (email,))
+        admin_data = cursor.fetchone()
+        if admin_data:
+            admin=Administrator(adminId = admin_data[0],
+                                userId = admin_data[1],
+                                firstName = admin_data[2],
+                                lastName = admin_data[3],
+                                email = admin_data[4],
+                                password = admin_data[5],
+                                active = admin_data[6])
+            cnx.close()
+            return admin
+        else:
+            cnx.close()
+            return None
 
 #This method returns user data when name given
-    def get_user_by_name(self,name):
-        cnx = Database.connect(self)
-        cursor = cnx.cursor()
-        query = "SELECT userId, firstName, lastName, email, pass, active FROM users WHERE firstName= %s"
-        cursor.execute(query, (name,) )
-        results = cursor.fetchone()
-        user = User()
-        user.user_id = results[0]
-        user.first_name = results[1]
-        user.last_name = results[2]
-        user.email = results[3]
-        user.password = results[4]
-        user.active = results[5]
-        cnx.close()
-        return user
-
     def get_user_by_email(self,email):
         cnx = Database.connect(self)
         cursor = cnx.cursor()
-        query = "SELECT firstName, pass FROM users WHERE email= %s"
+        query ='''SELECT userId,
+                    firstName,
+                    lastName,
+                    email,
+                    pass,
+                    active
+                  FROM users WHERE email= %s'''
         cursor.execute(query, (email,) )
         results = cursor.fetchone()
-        if(results):
-            user = User()
-            user.first_name = results[0]
-            user.password = results[1]
+        if results:
+            user = User(userId = results[0],
+                        firstName = results[1],
+                        lastName = results[2],
+                        email = results[3],
+                        password = results[4],
+                        active = results[5])
+            cnx.close()
+            return user
+        else:
+            cnx.close()
+            return None
+
+
+    def get_user_by_ident(self,userId):
+        cnx = Database.connect(self)
+        cursor = cnx.cursor()
+        query ='''SELECT userId,
+                    firstName,
+                    lastName,
+                    email,
+                    pass,
+                    active
+                FROM users WHERE userId= %s'''
+        cursor.execute(query, (userId,) )
+        results = cursor.fetchone()
+        if results:
+            user = User(userId = results[0],
+                        firstName = results[1],
+                        lastName = results[2],
+                        email = results[3],
+                        password = results[4],
+                        active = results[5])
             cnx.close()
             return user
         else:
@@ -97,42 +156,109 @@ class Database(object):
     def get_students_by_group(self, groupId):
         cnx = Database.connect(self)
         cursor = cnx.cursor()
-        query = "SELECT userId FROM students WHERE studentId = (SELECT studentId FROM matches WHERE groupId = %s)"
+        query = "SELECT students.userId FROM students INNER JOIN matches ON students.studentId=matches.studentId WHERE groupId = %s"
         cursor.execute(query, (groupId,))
         students = cursor.fetchall()
         if(students):
-            for i in range(len(students)):
-                print(students[i], end=" ")
+            tab = []
+            for student in students:
+                user = Database.get_user_by_ident(Database, student[0])
+                stud = Student(firstName = user.firstName,
+                                lastName = user.lastName,
+                                email = user.email,
+                                password = user.password,
+                                active = user.active,
+                                studentId = student[0],
+                                userId = user.userId)
+                tab.append(stud)
+            cnx.close()
+            return tab
+        else:
+            cnx.close()
+            return None
+
+    def get_teacher_by_ident(self, userId):
+        cnx = Database.connect(self)
+        cursor = cnx.cursor()
+        query = "SELECT teacherId FROM teachers WHERE userId = %s"
+        cursor.execute(query,(userId,))
+        result = cursor.fetchone()
+        if result:
+            user = Database.get_user_by_ident(Database, userId)
+            teacher = Teacher(firstName = user.firstName,
+                            lastName = user.lastName,
+                            email = user.email,
+                            password = user.password,
+                            active = user.active,
+                            teacherId = result[0],
+                            userId = userId)
+            cnx.close()
+            return teacher
+        else:
+            cnx.close()
+            return None
+
+    def close_group(self, groupId):
+        cnx = Database.connect(self)
+        cursor = cnx.cursor()
+        insert_query="UPDATE groups SET active = %s WHERE groupId = %s "
+        cursor.execute(insert_query, (False, groupId,))
+        cnx.commit()
         cnx.close()
 
-Database.get_students_by_group(Database,1)
+########################################### OTHER MODELS ################################################
 
 class User(object):
-    def __init__(self):
-        self.user_id = None
-        self.first_name = None
-        self.last_name = None
-        self.email = None
-        self.password = None
+    def __init__(self, firstName, lastName, email, password, active, userId = None):
+        self.userId = userId
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.password = password
         self.active = True
     
 class Administrator(User):
-    def __init__(self):
-        super(Administrator,self).__init__()
-        self.admin_id = None
+    def __init__(self, firstName, lastName, email, password, active, adminId=None, userId=None):
+        super(Administrator,self).__init__(userId = userId,
+                                           firstName = firstName,
+                                           lastName = lastName,
+                                           email = email,
+                                           password = password,
+                                           active = active)
+        self.adminId = adminId
         
 class Teacher(User):
-    def __init__(self):
-        super(Teacher, self).__init__()
-        self.teacher_id = None
+    def __init__(self, firstName, lastName, email, password, active, teacherId=None, userId=None):
+        super(Teacher, self).__init__(userId = userId,
+                                      firstName = firstName,
+                                      lastName = lastName,
+                                      email = email,
+                                      password = password,
+                                      active = active)
+        self.teacherId = teacherId
 
 class Student(User):
-    def __init__(self):
-        super(Student, self).__init__()
-        self.student_id = None
-
-
+    def __init__(self, firstName, lastName, email, password, active, studentId=None, userId=None,):
+        super(Student, self).__init__(userId = userId,
+                                      firstName = firstName,
+                                      lastName = lastName,
+                                      email = email,
+                                      password = password,
+                                      active = active)
+        self.studentId = studentId
 
             
+class Group(object):
+    def __init__(self, groupId=None, active=True):
+        self.groupId = groupId
+        self.active = active
+
+class Match(object):
+    def __init__(self, groupId, studentId, matchId=None):
+        self.groupId = groupId
+        self.studentId = studentId
+        self.matchId = matchId
+
+
 
 

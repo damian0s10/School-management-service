@@ -33,7 +33,7 @@ def logged():
         if(user):
             if(pbkdf2_sha256.verify(password, user.password)):
                 session['user'] = email
-                return "Jesteś zalogowany jako" + user.first_name + "<a href='/logout'>Wyloguj</a>"
+                return "Jesteś zalogowany jako" + user.firstName + "<a href='/logout'>Wyloguj</a>"
             else:
                 return """Podałeś nieprawidłowe hasło
                         <a href='/login'>Powrót</a>"""
@@ -52,19 +52,19 @@ def logout():
 @app.route("/registered", methods=["GET", "POST"])
 def registered():
     if request.method == "POST":
-        name = request.form["fname"]
-        surname = request.form["lname"]
+        firstName = request.form["fname"]
+        lastName = request.form["lname"]
         email = request.form["email"]
         isAvailable = Database.get_user_by_email(Database, email)
         if(isAvailable):
             return "Konto o tym adresie email juz istnieje <button><a href='/register'>Spróbuj ponownie</a></button> "
         else: 
             password = pbkdf2_sha256.hash(request.form["password"])
-            u = User()
-            u.first_name = name
-            u.last_name = surname
-            u.email = email
-            u.password = password
+            u = User(firstName = firstName,
+                     lastName = lastName,
+                     email = email,
+                     password = password,
+                     active = True)
             Database.add_user(Database, u)
             return "Utworzyłeś konto <button><a href='/login'>Zaloguj się</a></button> "
             
