@@ -156,20 +156,29 @@ class Database(object):
     def get_students_by_group(self, groupId):
         cnx = Database.connect(self)
         cursor = cnx.cursor()
-        query = "SELECT students.userId FROM students INNER JOIN matches ON students.studentId=matches.studentId WHERE groupId = %s"
+        query = '''SELECT 
+                    users.firstName,
+                    users.lastName,
+                    users.email,
+                    users.pass,
+                    users.active,
+                    students.userId,
+                    students.studentId
+                    FROM users INNER JOIN students ON students.userId=users.userId
+                    INNER JOIN matches ON students.studentId=matches.studentId
+                    WHERE groupId = %s'''
         cursor.execute(query, (groupId,))
         students = cursor.fetchall()
         if(students):
             tab = []
             for student in students:
-                user = Database.get_user_by_ident(Database, student[0])
-                stud = Student(firstName = user.firstName,
-                                lastName = user.lastName,
-                                email = user.email,
-                                password = user.password,
-                                active = user.active,
-                                studentId = student[0],
-                                userId = user.userId)
+                stud = Student(firstName = student[0],
+                               lastName = student[1],
+                               email = student[2],
+                               password = student[3],
+                               active = student[4],
+                               studentId = student[5],
+                               userId = student[6])
                 tab.append(stud)
             cnx.close()
             return tab
@@ -180,18 +189,26 @@ class Database(object):
     def get_teacher_by_ident(self, userId):
         cnx = Database.connect(self)
         cursor = cnx.cursor()
-        query = "SELECT teacherId FROM teachers WHERE userId = %s"
+        query = '''SELECT users.firstName,
+                          users.lastName,
+                          users.email,
+                          users.password,
+                          users.active,
+                          users.userId,
+                          teachers.teacherId
+                          FROM users INNER JOIN teachers
+                          ON users.userId=teachers.teacherId 
+                          WHERE teachers.userId = %s'''
         cursor.execute(query,(userId,))
         result = cursor.fetchone()
         if result:
-            user = Database.get_user_by_ident(Database, userId)
-            teacher = Teacher(firstName = user.firstName,
-                            lastName = user.lastName,
-                            email = user.email,
-                            password = user.password,
-                            active = user.active,
-                            teacherId = result[0],
-                            userId = userId)
+            teacher = Teacher(firstName = result[0],
+                              lastName = result[1],
+                              email = result[2],
+                              password = result[3],
+                              active = result[4],
+                              teacherId = result[6],
+                              userId = result[5])
             cnx.close()
             return teacher
         else:
