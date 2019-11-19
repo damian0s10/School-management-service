@@ -12,18 +12,30 @@
     <header>
             <h1 class="title">Akademia programowania</h1>
             <nav class="navbar">
-                <a class="nav_item" href='/'>Powrót</a>
+                {% block nav %}
+                <a class="nav_item" href='login'>Zaloguj</a>
+                <a class="nav_item" href='register'>Zarejestruj się</a>
+                {% endblock %}
             </nav>
     </header>
+    <div class="sidenav">
+        <div class="sidebutton">
+            <a href="/news">Aktualności</a>
+        </div>
+        <div class="sidebutton">
+            <a href="/courses">Kursy</a>
+        </div>
+        <div class="sidebutton">
+            <a href="/groups">Grupy</a>
+        </div>
+        <div class="sidebutton">
+            <a href="/grades">Oceny</a>
+        </div>
+    </div>
     <main>
         <div class="content">
-                <form  action='/logged' method="POST"> 
-                    <label><p>Email:</p> <input type='text' name='email' required></label>
-                    <label><p>Hasło:</p> <input type='password' name='pass' required></label>
-                    <div><input type='submit' value='Zaloguj'></div>
-                </form>
+               {% block content %}{% endblock %}
         </div>
     </main> 
     
 </body>
-

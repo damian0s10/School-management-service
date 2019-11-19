@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block nav %}
+    <a class="nav_menu" href='/logged'>{{firstName}} {{lastName}}</a>
+    <select name="Menu">
+            <optgroup label="Menu">
+                <option>Kokpit</option>
+                <option>Mój profil</option>
+                <option>Wyloguj</option>
+            </optgroup>
+            </select>
+{% endblock %}
+{% block content %}
+<h4>
+    "A bug is never just a mistake. It represents something bigger. An error of thinking. That makes You who You are."
+Elliot Alderson
+</h4>
+{% endblock %}

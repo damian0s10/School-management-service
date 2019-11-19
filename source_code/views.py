@@ -33,7 +33,7 @@ def logged():
         if(user):
             if(pbkdf2_sha256.verify(password, user.password)):
                 session['user'] = email
-                return "Jesteś zalogowany jako" + user.firstName + "<a href='/logout'>Wyloguj</a>"
+                return render_template("slogged.html", firstName = user.firstName, lastName = user.lastName)
             else:
                 return """Podałeś nieprawidłowe hasło
                         <a href='/login'>Powrót</a>"""
@@ -70,3 +70,18 @@ def registered():
             
     else:
         return flask.redirect('/')
+
+@app.route("/news")
+def news():
+    return render_template('news.html')
+
+@app.route("/courses")
+def courses():
+    return render_template('courses.html')
+
+@app.route("/groups")
+def ngroups():
+    return render_template('groups.html')
+@app.route("/grades")
+def grades():
+    return render_template('grades.html')
