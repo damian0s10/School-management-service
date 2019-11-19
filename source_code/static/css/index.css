@@ -1,0 +1,84 @@
+p,a, h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+    color: white;
+    text-decoration: none;
+}
+body {
+    margin: 0;
+    padding: 0;
+}
+.title {
+    color: white;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 50px;
+}
+header {
+    background-color: #333333;
+    
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: sticky;
+    top: 0;
+}
+.navbar {
+    padding-top: 30px;
+}
+.nav_item {
+    padding: 10px 10px 10px 10px;
+    
+}
+.nav_item:hover {
+    background-color: #660033;
+}
+main {
+    background-image: linear-gradient( -39deg, rgba(165, 12, 38, 0.589) 0%, rgba(8, 61, 236, 0.836) 60%,
+    rgba(165, 12, 38, 0.589) 100% ), url("../img/background.jpg");
+    background-position: bottom;
+    background-size: cover;
+    height: 100vh;
+    min-height: 500px;
+    max-height: 650px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+.content {
+    min-width: 500px;
+    margin:50px;
+    background: #eee;
+    height: 200px;
+    border-radius: 10px;
+}
+.content .login {
+    padding: 50px 0 50px 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    
+}
+.content .login div {
+    display: flex;
+    justify-content: center;
+}
+.content .login input[type="submit"] {
+    width: 100px;
+}
+.content .login label {
+    padding: 10px 30px 10px 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.content .login input {
+    margin: 0 10px 0 10px;
+}
+.content p {
+    color: black;
+    display: block;
+}

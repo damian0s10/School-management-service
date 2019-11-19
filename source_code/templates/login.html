@@ -1,5 +1,29 @@
-<form action='/logged' method="POST"> 
-Email: <input type='text' name='email' required><br>
-Hasło: <input type='password' name='pass' required><br>
-<input type='submit' value='Zaloguj'>
-</form>
+<!DOCTYPE HTML>
+<html lang="pl">
+<head>
+	<meta charset="utf-8" />
+	<title>Akademia programowania</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css')}}">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:900i&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+            <h1 class="title">Akademia programowania</h1>
+            <nav class="navbar">
+                <a class="nav_item" href='/'>Powrót</a>
+            </nav>
+    </header>
+    <main>
+        <div class="content">
+                <form class="login" action='/logged' method="POST"> 
+                    <label><p>Email:</p> <input type='text' name='email' required></label>
+                    <label><p>Hasło:</p> <input type='password' name='pass' required></label>
+                    <div><input type='submit' value='Zaloguj'></div>
+                </form>
+        </div>
+    </main> 
+    
+</body>
+
