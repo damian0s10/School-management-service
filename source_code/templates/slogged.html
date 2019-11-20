@@ -2,13 +2,11 @@
 
 {% block nav %}
     <a class="nav_menu" href='/logged'>{{firstName}} {{lastName}}</a>
-    <select name="Menu">
-            <optgroup label="Menu">
-                <option>Kokpit</option>
-                <option>Mój profil</option>
-                <option>Wyloguj</option>
-            </optgroup>
-            </select>
+    <i class="fas fa-bars hamburger"></i>
+    <ul class='menu_items'>
+        <li class='item'><a href='/'>Mój profil</a></li>
+        <li class='item'><a href='/logged'>Wyloguj</a></li>
+    </ul>
 {% endblock %}
 {% block content %}
 <h4>
