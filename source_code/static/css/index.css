@@ -39,12 +39,16 @@ main {
     rgba(165, 12, 38, 0.589) 100% ), url("../img/background.jpg");
     background-position: bottom;
     background-size: cover;
-    height: 100vh;
-    min-height: 500px;
-    max-height: 650px;
+    /*height: 100vh;*/
+    min-height: 550px;
+    /*max-height: 650px;*/
     margin: 0;
     padding: 0;
     display: flex;
+    /*justify-content: center;*/
+    /*align-items: center;*/
+}
+.align {
     justify-content: center;
     align-items: center;
 }
@@ -97,16 +101,19 @@ main {
 }
 
 .sidenav {
-    height: 100%;
-    max-width: 240px;
-    min-width: 200px;
-    position: fixed;
-    z-index: 1; 
-    top: 120px;
+    /*height: 100%;*/
+    /*max-width: 240px;*/
+    min-width: 120px;
+    /*position: fixed;*/
+    /*z-index: 1;*/ 
+    /*top: 120px;*/
     background: #660033;
+    margin-top: 10px;
+    border-radius: 5px;
 }
 .sidebutton {
-    display: flex;width:100%;
+    display: flex;
+    width:100%;
     min-height:40px;
     max-width:200px;
     padding-top: 5px;
