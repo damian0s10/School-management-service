@@ -12,14 +12,19 @@
     <header>
             <h1 class="title">Akademia programowania</h1>
             <nav class="navbar">
+                {% block nav %}
                 <a class="nav_item" href='login'>Zaloguj</a>
                 <a class="nav_item" href='register'>Zarejestruj się</a>
+                {% endblock %}
             </nav>
     </header>
     <main>
         <div class="container">
             <div class="content">
-
+                {% block form %}
+                {% endblock %}
+                {% block statement %}
+                {% endblock %}
             </div>
         </div>
     </main> 
