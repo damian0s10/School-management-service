@@ -56,12 +56,19 @@ footer p {
 }
 .navbar {
     padding-top: 30px;
-    
+    display: flex;
+    flex-wrap: wrap;
+}
+.navbar_log {
+    padding-top: 30px;
+}
+.navbar_log i {
+    padding: 5px;
 }
 .nav_item {
-    padding: 10px 10px 10px 10px;
-    
+    padding: 10px;   
 }
+
 .nav_item:hover {
     background-color: #660033;
 }
@@ -87,7 +94,7 @@ main .container {
     color: black;
 }
 .content form {
-    padding: 50px 0 50px 0;
+    padding: 50px 0 15px 0;
     margin-left: auto;
     margin-right: auto;
     display: flex;
@@ -151,4 +158,9 @@ main .container {
     border-radius:0;
     font-weight: 600;
     border-radius: 4px;
+}
+.content .statement {
+    color: red;
+    text-align: center;
+    padding: 5px 0 15px 0;
 }

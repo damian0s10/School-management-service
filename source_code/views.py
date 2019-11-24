@@ -35,11 +35,9 @@ def logged():
                 session['user'] = email
                 return render_template("slogged.html", firstName = user.firstName, lastName = user.lastName)
             else:
-                return """Podałeś nieprawidłowe hasło
-                        <a href='/login'>Powrót</a>"""
+                return render_template("incorrectpass.html")
         else:
-            return """Nie ma takiego użytkownika
-                        <a href='/login'>Powrót</a>"""
+            return render_template("incorrectuser.html")
     else:
         return flask.redirect('/')
 
@@ -57,7 +55,7 @@ def registered():
         email = request.form["email"]
         isAvailable = Database.get_user_by_email(Database, email)
         if(isAvailable):
-            return "Konto o tym adresie email juz istnieje <button><a href='/register'>Spróbuj ponownie</a></button> "
+            return render_template("incorrectemail.html")
         else: 
             password = pbkdf2_sha256.hash(request.form["password"])
             u = User(firstName = firstName,

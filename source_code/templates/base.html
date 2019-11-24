@@ -12,30 +12,20 @@
 <body>
     <header>
             <h1 class="title">Akademia programowania</h1>
-            <nav class="navbar">
-                {% block nav %}
+            {% block nav %}
+            <nav class="navbar_log">  
                 <a class="nav_item" href='login'>Zaloguj</a>
                 <a class="nav_item" href='register'>Zarejestruj się</a>
-                {% endblock %}
             </nav>
+            {% endblock %}
     </header>
    
     <main>
         <div class="container">
             <aside>
                 <div class="sidenav">
-                    <div class="sidebutton">
-                        <a href="/news">Aktualności</a>
-                    </div>
-                    <div class="sidebutton">
-                        <a href="/courses">Kursy</a>
-                    </div>
-                    <div class="sidebutton">
-                        <a href="/groups">Grupy</a>
-                    </div>
-                    <div class="sidebutton">
-                        <a href="/grades">Oceny</a>
-                    </div>
+                    {% block sidebar %}
+                    {% endblock %}
                 </div>
             </aside>
             <div class="content">
