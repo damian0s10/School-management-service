@@ -1,2 +1,2 @@
-.vscode
-__pycache__
+app/.vscode
+app/__pycache__

@@ -2,11 +2,11 @@
 
 {% block nav %}
     <nav class="navbar_log">
-        <a class="nav_menu" href='/slogged'>{{firstName}} {{lastName}}</a>
+        <a class="nav_menu" href='/userview'>{{firstName}} {{lastName}}</a>
         <i class="fas fa-bars"></i>
         <ul class='menu_items' style="display: none;">
-            <li class='item'><a href='/slogged'>Mój profil</a></li>
-            <li class='item'><a href='/'>Wyloguj</a></li>
+            <li class='item'><a href='/userview'>Mój profil</a></li>
+            <li class='item'><a href='/logout'>Wyloguj</a></li>
         </ul>
     </nav>
 {% endblock %}
@@ -18,15 +18,14 @@
         <a href="/courses">Kursy</a>
     </div>
     <div class="sidebutton">
-        <a href="/groups">Grupy</a>
+        <a href="/ygroups">Twoje grupy</a>
     </div>
     <div class="sidebutton">
-        <a href="/grades">Oceny</a>
+        <a href="/grades">Obecności</a>
     </div>
 {% endblock %}
 {% block content %}
 <h4>
-    "A bug is never just a mistake. It represents something bigger. An error of thinking. That makes You who You are."
-Elliot Alderson
+    Witaj nauczycielu, wypij kawe i do roboty !
 </h4>
 {% endblock %}

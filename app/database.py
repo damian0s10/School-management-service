@@ -199,7 +199,7 @@ class Database(object):
         query = '''SELECT users.firstName,
                           users.lastName,
                           users.email,
-                          users.password,
+                          users.pass,
                           users.active,
                           users.userId,
                           teachers.teacherId
@@ -229,3 +229,4 @@ class Database(object):
         cursor.execute(insert_query, (False, groupId,))
         cnx.commit()
         cnx.close()
+
