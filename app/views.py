@@ -34,8 +34,15 @@ class LoginView(MethodView):
         if pbkdf2_sha256.verify(password, user.password):
             session['email'] = email
             session['username'] = user.firstName
-            session['usersurname'] = user.lastName
-            return flask.redirect('/userview')
+            session['user_surname'] = user.lastName
+            admin = self.db.get_admin_by_email(email)
+            teacher = self.db.get_teacher_by_ident(user.userId)
+            if admin:
+                return flask.redirect("/admin/")
+            elif teacher:
+                return flask.redirect("/teacher/")
+            else:
+                return flask.redirect("/student/")
         
         return render_template("incorrectpass.html")
 
@@ -71,24 +78,35 @@ class RegisterView(MethodView):
             return render_template("fatalerror.html") 
         return render_template('account_created.html')
 
-class UserView(MethodView):
+
+class AdminView(MethodView):
     def __init__(self, database):
         self.db = database
-    
+
     def get(self):
         if 'email' in session:
-            email = session['email']
-            user = self.db.get_user_by_email(email)
-            admin = self.db.get_admin_by_email(email)
-            teacher = self.db.get_teacher_by_ident(user.userId)
-            if admin:
-                return render_template("admin_view.html",firstName=session['username'], lastName=session['usersurname'])
-            elif teacher:
-                return render_template("teacher_view.html",firstName=session['username'], lastName=session['usersurname'])
-            else:
-                return render_template("student_view.html", firstName=session['username'], lastName=session['usersurname'])
+           return render_template("admin_view.html",firstName=session['username'], lastName=session['user_surname'])
         return flask.redirect("/")
-    
+
+
+class TeacherView(MethodView):
+    def __init__(self, database):
+        self.db = database
+
+    def get(self):
+        if 'email' in session:
+            return render_template("teacher_view.html",firstName=session['username'], lastName=session['user_surname'])
+        return flask.redirect("/")
+
+class StudentView(MethodView):
+    def __init__(self, database):
+        self.db = database
+
+    def get(self):
+        if 'email' in session:
+           return render_template("student_view.html",firstName=session['username'], lastName=session['user_surname'])
+        return flask.redirect("/")
+
 class Logout(MethodView):
     def get(self):
         if 'email' in session:
