@@ -1,4 +1,4 @@
-from app import app
+
 import flask
 from flask import request, session, render_template, g
 from models import User
@@ -7,9 +7,9 @@ from passlib.hash import pbkdf2_sha256
 from flask.views import MethodView
 
 
-@app.route("/")
-def index():
-    return render_template('index.html')
+class IndexView(MethodView):
+    def get(self):
+        return render_template('index.html')
 
 class LoginView(MethodView):
     def __init__(self, database):
@@ -26,8 +26,8 @@ class LoginView(MethodView):
             user = self.db.get_user_by_email(email)
         except Exception as e:
             print(e) # use custom logger
-            return render_template("incorrectuser.html") # TODO: change to other html
- 
+            return render_template("fatalerror.html")
+
         if not user:
             return render_template("incorrectuser.html")
         
@@ -54,24 +54,22 @@ class RegisterView(MethodView):
             if self.db.get_user_by_email(email):
                 return render_template("incorrectemail.html")
         except Exception as e:
-            # TODO: add handling of catch
             print(e)
-            return render_template("incorrectemail.html") 
+            return render_template("fatalerror.html") 
 
-        u = User(firstName = firstName,
+        us = User(firstName = firstName,
                  lastName = lastName,
                  email = email,
                  password = pbkdf2_sha256.hash(password),
                  active = True)
         try:        
-            self.db.add_user(u)
+            self.db.add_user(us)
         except Exception as e:
-            # TODO: add handling of catch
-            return 
+            print(e)
+            return render_template("fatalerror.html") 
+        return render_template('account_created.html')
 
-        return "Utworzyłeś konto <button><a href='/login'>Zaloguj się</a></button> "
-
-
+'''
 @app.before_request
 def before_request():
     g.user = None
@@ -93,8 +91,9 @@ def courses():
     return render_template('courses.html')
 
 @app.route("/groups")
-def ngroups():
+def groups():
     return render_template('groups.html')
 @app.route("/grades")
 def grades():
     return render_template('grades.html')
+'''

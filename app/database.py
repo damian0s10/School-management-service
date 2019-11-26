@@ -2,12 +2,17 @@ from mysql.connector import connect, ProgrammingError
 from models import *
 
 class Database(object):
-    def __init__(self, hostName, port,  userName, password, database):
+    def __init__(self, hostName, port,  userName, password, database, charset,use_unicode, collation):
         self.host = hostName
         self.port = port
         self.database = database
         self.user = userName
         self.password = password
+        self.charset = charset
+        self.use_unicode=use_unicode
+        self.collation = collation
+
+        
 
 #This method establish connection to database. 
     def connect(self):
@@ -16,6 +21,9 @@ class Database(object):
                       password=self.password,
                       database=self.database,
                       port=self.port,
+                      charset = self.charset,
+                      use_unicode = self.use_unicode,
+                      collation = self.collation
                       )
         return cnx
 
@@ -61,7 +69,7 @@ class Database(object):
         cnx.close()
 
     def add_teacher(self, userId):
-        cnx = self.connect(self)
+        cnx = self.connect()
         cursor = cnx.cursor()
         query = "INSERT INTO teachers(userId) VALUES(%s)"
         cursor.execute(query, (userId,))

@@ -129,7 +129,8 @@ add_query_to_set(users,
                 lessons,
                 attendances,
                 grades,
-                matches)
+                matches,
+                set_utf8)
 
 setup()
 #Run this script.
