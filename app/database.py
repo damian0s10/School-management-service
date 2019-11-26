@@ -2,15 +2,13 @@ from mysql.connector import connect, ProgrammingError
 from models import *
 
 class Database(object):
-    def __init__(self, hostName, port,  userName, password, database, charset,use_unicode, collation):
+    def __init__(self, hostName, port,  userName, password, database):
         self.host = hostName
         self.port = port
         self.database = database
         self.user = userName
         self.password = password
-        self.charset = charset
-        self.use_unicode=use_unicode
-        self.collation = collation
+        
 
         
 
@@ -21,9 +19,6 @@ class Database(object):
                       password=self.password,
                       database=self.database,
                       port=self.port,
-                      charset = self.charset,
-                      use_unicode = self.use_unicode,
-                      collation = self.collation
                       )
         return cnx
 

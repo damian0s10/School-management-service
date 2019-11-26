@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 if __name__ == '__main__':
-    db = Database("localhost", 3306, "database", "database", "database", charset="utf8", use_unicode = True, collation="utf8mb4_general_ai_ci")
+    db = Database("localhost", 3306, "database", "database", "database")
 
     indexView = IndexView.as_view('index_view')
     app.add_url_rule('/', view_func=indexView, methods=['GET',])
