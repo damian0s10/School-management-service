@@ -1,15 +1,15 @@
-
 import flask
 from flask import request, session, render_template, g
 from models import User
 from database import Database
 from passlib.hash import pbkdf2_sha256
 from flask.views import MethodView
-
+import uuid
 
 class IndexView(MethodView):
     def get(self):
         return render_template('index.html')
+        
 
 class LoginView(MethodView):
     def __init__(self, database):
@@ -19,22 +19,24 @@ class LoginView(MethodView):
         return render_template('login.html')
     
     def post(self):
-        session.pop('user', None)
         email = request.form.get("email", "")
         password = request.form.get("pass", "")
         try:
             user = self.db.get_user_by_email(email)
         except Exception as e:
-            print(e) # use custom logger
+            print(e)
             return render_template("fatalerror.html")
 
         if not user:
             return render_template("incorrectuser.html")
         
         if pbkdf2_sha256.verify(password, user.password):
-            session['user'] = email
-            return render_template("slogged.html", firstName = user.firstName, lastName = user.lastName)
-        
+            session['userGId'] = user.userGId
+            session['first_name'] = user.firstName
+            session['last_name'] = user.lastName
+            if user.user_type == "admin": return flask.redirect("/admin/")
+            if user.user_type == "teacher": return flask.redirect("/teacher/")
+            return flask.redirect("/student/")
         return render_template("incorrectpass.html")
 
 class RegisterView(MethodView):
@@ -49,6 +51,7 @@ class RegisterView(MethodView):
         lastName = request.form.get("lname", "")
         email = request.form.get("email", "")
         password = request.form.get("password", "")
+        userGId = str(uuid.uuid1())
 
         try:
             if self.db.get_user_by_email(email):
@@ -57,7 +60,8 @@ class RegisterView(MethodView):
             print(e)
             return render_template("fatalerror.html") 
 
-        us = User(firstName = firstName,
+        us = User(userGId = userGId,
+                 firstName = firstName,
                  lastName = lastName,
                  email = email,
                  password = pbkdf2_sha256.hash(password),
@@ -69,31 +73,40 @@ class RegisterView(MethodView):
             return render_template("fatalerror.html") 
         return render_template('account_created.html')
 
-'''
-@app.before_request
-def before_request():
-    g.user = None
-    if 'user' in session:
-        g.user = session['user']   
 
-@app.route("/logout")
-def logout():
-    session.pop('user', None)
-    return flask.redirect('/')
+class AdminView(MethodView):
+    def __init__(self, database):
+        self.db = database
+    def get(self):
+        if 'userGId' in session:
+           return render_template("admin_view.html",firstName=session['first_name'], lastName=session['last_name'])
+        return flask.redirect("/")
 
 
-@app.route("/news")
-def news():
-    return render_template('news.html')
+class TeacherView(MethodView):
+    def __init__(self, database):
+        self.db = database
+    def get(self):
+        if 'userGId' in session:
+            return render_template("teacher_view.html",firstName=session['first_name'], lastName=session['last_name'])
+        return flask.redirect("/")
 
-@app.route("/courses")
-def courses():
-    return render_template('courses.html')
+class StudentView(MethodView):
+    def __init__(self, database):
+        self.db = database
+    def get(self):
+        if 'userGId' in session:
+           return render_template("student_view.html",firstName=session['first_name'], lastName=session['last_name'])
+        return flask.redirect("/")
 
-@app.route("/groups")
-def groups():
-    return render_template('groups.html')
-@app.route("/grades")
-def grades():
-    return render_template('grades.html')
-'''
+class Logout(MethodView):
+    def get(self):
+        if 'userGId' in session:
+            session.pop('email', None)
+            session.pop('first_name', None)
+            session.pop('last_name', None)
+            return flask.redirect("/")
+        return flask.redirect("/")
+
+
+

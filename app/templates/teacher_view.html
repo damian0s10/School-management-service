@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block nav %}
+    <nav class="navbar_log">
+        <a class="nav_menu" href='/teacher'>prof. {{firstName}} {{lastName}}</a>
+        <i class="fas fa-bars"></i>
+        <ul class='menu_items' style="display: none;">
+            <li class='item'><a href='/teacher'>Mój profil</a></li>
+            <li class='item'><a href='/logout'>Wyloguj</a></li>
+        </ul>
+    </nav>
+{% endblock %}
+{% block sidebar %}
+    <div class="sidebutton">
+        <a href="/news">Aktualności</a>
+    </div>
+    <div class="sidebutton">
+        <a href="/courses">Kursy</a>
+    </div>
+    <div class="sidebutton">
+        <a href="/groups">Twoje grupy</a>
+    </div>
+    <div class="sidebutton">
+        <a href="/grades">Obecności</a>
+    </div>
+{% endblock %}
+{% block content %}
+<h4>
+    Witaj nauczycielu, wypij kawe i do roboty !
+</h4>
+{% endblock %}

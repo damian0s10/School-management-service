@@ -13,35 +13,17 @@ create_tables_sql_guery=[]
 
 users='''
     CREATE TABLE users (
-    userId int NOT NULL AUTO_INCREMENT,
+    Id INT NOT NULL AUTO_INCREMENT,
+    userGId varchar(50) NOT NULL,
     firstName varchar(20) NOT NULL,
     lastName varchar(20) NOT NULL,
     email varchar(40) NOT NULL,
     pass varchar(100) NOT NULL,
+    user_type enum('student', 'teacher', 'admin'),
     active bool NOT NULL,
-    PRIMARY KEY(userID)
+    PRIMARY KEY(Id)
     );'''
-administrators='''
-    create table administrators (
-    adminId int NOT NULL AUTO_INCREMENT,
-    userId int NOT NULL,
-    PRIMARY KEY(adminId),
-    FOREIGN KEY(userId) REFERENCES users(userId)
-    );'''
-teachers='''
-    create table teachers (
-    teacherId int NOT NULL AUTO_INCREMENT,
-    userId int NOT NULL,
-    PRIMARY KEY(teacherId),
-    FOREIGN KEY(userId) REFERENCES users(userId)
-    );'''
-students='''
-    create table students (
-    studentId int NOT NULL AUTO_INCREMENT,
-    userId int NOT NULL,
-    PRIMARY KEY(studentId),
-    FOREIGN KEY(userId) REFERENCES users(userId)
-    );'''
+
 subjects='''
     create table subjects(
     subjectId int NOT NULL AUTO_INCREMENT,
@@ -66,7 +48,7 @@ lessons='''
     timeValue time NOT NULL,
     PRIMARY KEY(lessonId),
     FOREIGN KEY(subjectId) REFERENCES subjects(subjectId),
-    FOREIGN KEY(teacherId) REFERENCES teachers(teacherId),
+    FOREIGN KEY(teacherId) REFERENCES users(Id),
     FOREIGN KEY(groupId) REFERENCES groups(groupId)
     );'''
 attendances='''
@@ -77,7 +59,7 @@ attendances='''
     attendance bool NOT NULL,
     PRIMARY KEY(attendanceId),
     FOREIGN KEY(lessonId) REFERENCES lessons(lessonId),
-    FOREIGN KEY(studentId) REFERENCES students(studentId)
+    FOREIGN KEY(studentId) REFERENCES users(Id)
     );'''
 grades='''
     create table grades(
@@ -87,7 +69,7 @@ grades='''
     grade int NOT NULL,
     PRIMARY KEY(gradeId),
     FOREIGN KEY(subjectId) REFERENCES subjects(subjectId),
-    FOREIGN KEY(studentId) REFERENCES students(studentId)
+    FOREIGN KEY(studentId) REFERENCES users(Id)
     );'''
 matches='''
     create table matches(
@@ -121,16 +103,13 @@ def setup():
 
 #Add your table name to args of this function below.
 add_query_to_set(users,
-                administrators,
-                teachers,
-                students,
                 subjects,
                 groups,
                 lessons,
                 attendances,
                 grades,
                 matches,
-                set_utf8)
+                )
 
 setup()
 #Run this script.
