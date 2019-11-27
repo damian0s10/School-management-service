@@ -3,11 +3,10 @@ import os
 from database import Database
 from views import LoginView, RegisterView, IndexView, Logout, AdminView, StudentView, TeacherView
 
-app = Flask(__name__)
-app.secret_key = os.urandom(24)
-
 
 if __name__ == '__main__':
+    app = Flask(__name__)
+    app.secret_key = os.urandom(24)
     db = Database("localhost", 3306, "database", "database", "database")
 
     indexView = IndexView.as_view('index_view')
