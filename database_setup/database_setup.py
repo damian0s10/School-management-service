@@ -35,20 +35,20 @@ groups='''
     create table groups(
     groupId int NOT NULL AUTO_INCREMENT,
     active bool NOT NULL,
-    PRIMARY KEY(groupId)
+    subjectId int NOT NULL,
+    teacherId int NOT NULL,
+    PRIMARY KEY(groupId),
+    FOREIGN KEY(subjectId) REFERENCES subjects(subjectId),
+    FOREIGN KEY(teacherId) REFERENCES users(Id)
     );'''
 lessons='''
     create table lessons(
     lessonId int NOT NULL AUTO_INCREMENT,
-    subjectId int NOT NULL,
-    teacherId int NOT NULL,
     groupId int NOT NULL,
     classroom varchar(5) NOT NULL,
     dateValue date NOT NULL,
     timeValue time NOT NULL,
     PRIMARY KEY(lessonId),
-    FOREIGN KEY(subjectId) REFERENCES subjects(subjectId),
-    FOREIGN KEY(teacherId) REFERENCES users(Id),
     FOREIGN KEY(groupId) REFERENCES groups(groupId)
     );'''
 attendances='''
@@ -76,6 +76,7 @@ matches='''
     matchId int NOT NULL AUTO_INCREMENT,
     groupId int NOT NULL,
     studentId int NOT NULL,
+    active bool NOT NULL,
     PRIMARY KEY(matchId),
     FOREIGN KEY(groupId) REFERENCES groups(groupId)
     );

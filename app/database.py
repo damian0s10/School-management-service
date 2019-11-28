@@ -42,6 +42,77 @@ class Database(object):
         cursor.execute(get_user_promoted_query, (email,))
         cnx.commit()
         cnx.close()
+#This method adds course, only admin can use 
+    def add_course(self, course_data):
+        cnx = self.connect()
+        cursor = cnx.cursor()
+        insert_query = "INSERT INTO subjects(name, description) VALUES(%s,%s)"
+        cursor.execute(insert_query,(course_data.name,course_data.description))
+        cnx.commit()
+        cnx.close()
+
+#This method adds group, only admin can use 
+    def add_group(self, group_data):
+        cnx = self.connect()
+        cursor = cnx.cursor()
+        insert_query = "INSERT INTO groups(active, subjectId, teacherId) VALUES(%s,%s,%s)"
+        cursor.execute(insert_query,(group_data.active,group_data.subjectId,group_data.teacherId))
+        cnx.commit()
+        cnx.close()
+
+#This method gets all courses, only admin can use 
+    def get_all_courses(self):
+        cnx = self.connect()
+        cursor = cnx.cursor()
+        query = '''SELECT subjectId, name,description FROM subjects '''
+        cursor.execute(query)
+        courses= cursor.fetchall()
+        if courses:
+            tab = []
+            for course in courses:
+                c = Course(subjectId = course[0], name = course[1], description = course[2])
+                tab.append(c)
+            cnx.close()
+            return tab
+        else:
+            cnx.close()
+            return None
+#This methon gets all teachers, only admin can use
+    def get_all_teachers(self):
+        cnx = self.connect()
+        cursor = cnx.cursor()
+        query ='''SELECT Id,
+                    userGId,
+                    firstName,
+                    lastName,
+                    email,
+                    pass,
+                    user_type,
+                    active
+                    FROM users WHERE user_type='teacher' '''
+        cursor.execute(query)
+        teachers = cursor.fetchall()
+        if teachers:
+            tab = []
+            for teacher in teachers:
+                u = User(
+                        userId = teacher[0],
+                        userGId = teacher[1],
+                        firstName = teacher[2],
+                        lastName = teacher[3],
+                        email = teacher[4],
+                        password = teacher[5],
+                        user_type = teacher[6],
+                        active = teacher[7])
+                tab.append(u)
+            cnx.close()
+            return tab
+        else:
+            cnx.close()
+            return None
+    
+    
+
 
     '''
     def add_student_to_group(self, groupId, userGId):

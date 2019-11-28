@@ -1,0 +1,18 @@
+{% extends "admin_view.html" %}
+{% block content %}
+<form class='createGroup' action='/admin/creategroup/' method="POST">
+        <p>Wybierz temat kursu: </p>
+        <select name="subject">
+            {% for course in courses %}
+                <option value="{{ course.subjectId }}">{{ course.name }}</option>
+            {% endfor %} 
+        </select>
+        <p>Wybierz prowadzącego: </p>
+        <select name="teacher">
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.userGId }}">{{ teacher.firstName }} {{ teacher.lastName }} </option>
+                {% endfor %} 
+        </select>
+        <div><input type='submit' value='Zatwierdź'></div>
+</form>
+{% endblock %}

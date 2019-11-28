@@ -1,8 +1,7 @@
 from flask import Flask
 import os
 from database import Database
-from views import LoginView, RegisterView, IndexView, Logout, AdminView, StudentView, TeacherView
-
+from views import *
 
 if __name__ == '__main__':
     app = Flask(__name__)
@@ -25,6 +24,18 @@ if __name__ == '__main__':
 
     adminView = AdminView.as_view('admin_view', database = db)
     app.add_url_rule('/admin/', view_func=adminView, methods=['GET',])
+
+    adminAddCourseView = adminAddCourseView.as_view('adminAddCourseView', database = db)
+    app.add_url_rule('/admin/createcourse/', view_func=adminAddCourseView, methods=['GET',])
+    app.add_url_rule('/admin/createcourse/', view_func=adminAddCourseView, methods=['POST',])
+
+    adminCoursesView = adminCoursesView.as_view('adminCoursesView', database = db)
+    app.add_url_rule('/admin/courses/', view_func=adminCoursesView, methods=['GET',])
+    
+
+    adminCreateGroupView = adminCreateGroupView.as_view('adminCreateGroupView', database = db)
+    app.add_url_rule('/admin/creategroup/', view_func=adminCreateGroupView, methods=['GET',])
+    app.add_url_rule('/admin/creategroup/', view_func=adminCreateGroupView, methods=['POST',])
 
     teacherView = TeacherView.as_view('teacher_view', database = db)
     app.add_url_rule('/teacher/', view_func=teacherView, methods=['GET',])
