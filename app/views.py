@@ -79,7 +79,13 @@ class AdminView(MethodView):
         self.db = database
     def get(self):
         if 'userGId' in session:
-           return render_template("admin_view.html",firstName=session['first_name'], lastName=session['last_name'])
+            try:
+                if self.db.get_user_by_id(session['userGId']).user_type == "admin":
+                    return render_template("admin_view.html",firstName=session['first_name'], lastName=session['last_name'])
+                return flask.redirect("/")
+            except Exception as e:
+                print(e)
+                return render_template("fatalerror.html")
         return flask.redirect("/")
 
 
@@ -88,7 +94,13 @@ class TeacherView(MethodView):
         self.db = database
     def get(self):
         if 'userGId' in session:
-            return render_template("teacher_view.html",firstName=session['first_name'], lastName=session['last_name'])
+            try:
+                if self.db.get_user_by_id(session['userGId']).user_type == "teacher":
+                    return render_template("teacher_view.html",firstName=session['first_name'], lastName=session['last_name'])
+                return flask.redirect("/")
+            except Exception as e:
+                print(e)
+                return render_template("fatalerror.html")
         return flask.redirect("/")
 
 class StudentView(MethodView):
@@ -96,13 +108,20 @@ class StudentView(MethodView):
         self.db = database
     def get(self):
         if 'userGId' in session:
-           return render_template("student_view.html",firstName=session['first_name'], lastName=session['last_name'])
+            try:
+                if self.db.get_user_by_id(session['userGId']).user_type == "teacher":
+                    if session['userGId'] == self.db.get_user_by_id(session['userGId']):
+                        return render_template("student_view.html",firstName=session['first_name'], lastName=session['last_name'])
+                    return flask.redirect("/")
+            except Exception as e:
+                print(e)
+                return render_template("fatalerror.html")
         return flask.redirect("/")
 
 class Logout(MethodView):
     def get(self):
         if 'userGId' in session:
-            session.pop('email', None)
+            session.pop('userGId', None)
             session.pop('first_name', None)
             session.pop('last_name', None)
             return flask.redirect("/")

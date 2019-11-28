@@ -111,7 +111,7 @@ class Database(object):
                     pass,
                     user_type,
                     active
-                FROM users WHERE userId= %s'''
+                FROM users WHERE userGId= %s'''
         cursor.execute(query, (userGId,) )
         results = cursor.fetchone()
         if results:
