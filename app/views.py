@@ -1,6 +1,6 @@
 import flask
 from flask import request, session, render_template, g
-from models import User
+from models import User, Course, Group
 from database import Database
 from passlib.hash import pbkdf2_sha256
 from flask.views import MethodView
@@ -65,6 +65,7 @@ class RegisterView(MethodView):
                  lastName = lastName,
                  email = email,
                  password = pbkdf2_sha256.hash(password),
+                 user_type = 'student',
                  active = True)
         try:        
             self.db.add_user(us)
@@ -82,6 +83,52 @@ class AdminView(MethodView):
            return render_template("admin_view.html",firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
 
+class adminAddCourseView(MethodView):
+    def __init__(self, database):
+        self.db = database
+    def get(self):
+        if 'userGId' in session:
+           return render_template("createcourse.html",firstName=session['first_name'], lastName=session['last_name'])
+        return flask.redirect("/")
+    def post(self):
+        name = request.form.get("name", "")
+        description = request.form.get("description", "")
+        course = Course(name,description)
+        try:
+            self.db.add_course(course)
+        except Exception as e:
+            print(e)
+            return flask.redirect("/")
+        return flask.redirect("/admin/")
+
+class adminCoursesView(MethodView):
+    def __init__(self, database):
+        self.db = database
+    def get(self):
+        if 'userGId' in session:
+            courses = self.db.get_all_courses()
+            return render_template("listcourses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+        return flask.redirect("/")
+
+class adminCreateGroupView(MethodView):
+    def __init__(self, database):
+        self.db = database
+    def get(self):
+        if 'userGId' in session:
+            teachers = self.db.get_all_teachers()
+            courses = self.db.get_all_courses()
+            return render_template("creategroup.html",teachers=teachers, courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+        return flask.redirect("/")
+    def post(self):
+        subject = request.form.get("subject", "")
+        teacher = request.form.get("teacher", "")
+        group = Group(subjectId = subject, teacherId = teacher)
+        try:
+            self.db.add_group(group)
+        except Exception as e:
+            print(e)
+            return flask.redirect("/")
+        return flask.redirect("/admin/")
 
 class TeacherView(MethodView):
     def __init__(self, database):

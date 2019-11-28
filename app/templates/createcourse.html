@@ -1,0 +1,8 @@
+{% extends "admin_view.html" %}
+{% block content %}
+<form class='addCourse' action='/admin/createcourse/' method="POST">
+        <label><p>Nazwa kursu:</p> <input type='text' name='name' required></label>
+        <label><p>Opis kursu:</p> <textarea maxlength='255' name='description' required></textarea></label>
+        <div><input type='submit' value='Zatwierdź'></div>
+</form>
+{% endblock %}
