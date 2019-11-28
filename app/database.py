@@ -56,7 +56,7 @@ class Database(object):
         cnx = self.connect()
         cursor = cnx.cursor()
         insert_query = "INSERT INTO groups(active, subjectId, teacherId) VALUES(%s,%s,%s)"
-        cursor.execute(insert_query,(group_data.active,group_data.subjectId,group_data.teacherId))
+        cursor.execute(insert_query,(group_data.active,group_data.subjectId,int(group_data.teacherId)))
         cnx.commit()
         cnx.close()
 
@@ -133,13 +133,7 @@ class Database(object):
         cnx.close()
 
 
-    def add_group(self, groupId=None, active=True):
-        cnx = self.connect()
-        cursor = cnx.cursor()
-        insert_query="INSERT INTO groups(active) VALUES(%s)"
-        cursor.execute(insert_query, (active,))
-        cnx.commit()
-        cnx.close()
+    
 #This method returns admin data when email given
  
 
