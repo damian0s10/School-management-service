@@ -31,7 +31,7 @@ class LoginView(MethodView):
             return render_template("incorrectuser.html")
         
         if pbkdf2_sha256.verify(password, user.password):
-            session['userGId'] = user.userGId
+            session['user_type'] = user.user_type
             session['first_name'] = user.firstName
             session['last_name'] = user.lastName
             if user.user_type == "admin": return flask.redirect("/admin/")
@@ -78,23 +78,28 @@ class RegisterView(MethodView):
 class AdminView(MethodView):
     def __init__(self, database):
         self.db = database
+        self.permission = None
+        self.authorization()
+
+    def authorization(self):
+        if session['user_type'] == "admin": self.permission = "admin"
+        if session['user_type'] == "teacher": self.permission = "teacher"
+        if session['user_type'] == "student": self.permission = "student"
+        else: pass
+
     def get(self):
-        if 'userGId' in session:
-            try:
-                if self.db.get_user_by_id(session['userGId']).user_type == "admin":
-                    return render_template("admin_view.html",firstName=session['first_name'], lastName=session['last_name'])
-                return flask.redirect("/")
-            except Exception as e:
-                print(e)
-                return render_template("fatalerror.html")
+        if 'user_type' in session:
+            if self.permission == "admin":
+                return render_template("admin_view.html",firstName=session['first_name'], lastName=session['last_name'])
+            return flask.redirect("/")
         return flask.redirect("/")
 
-class adminAddCourseView(MethodView):
-    def __init__(self, database):
-        self.db = database
+class adminAddCourseView(AdminView):
     def get(self):
-        if 'userGId' in session:
-           return render_template("createcourse.html",firstName=session['first_name'], lastName=session['last_name'])
+        if 'user_type' in session:
+            if self.permission == "admin":
+                return render_template("createcourse.html",firstName=session['first_name'], lastName=session['last_name'])
+            return flask.redirect("/")
         return flask.redirect("/")
     def post(self):
         name = request.form.get("name", "")
@@ -107,23 +112,23 @@ class adminAddCourseView(MethodView):
             return flask.redirect("/")
         return flask.redirect("/admin/")
 
-class adminCoursesView(MethodView):
-    def __init__(self, database):
-        self.db = database
+class adminCoursesView(AdminView):
     def get(self):
-        if 'userGId' in session:
-            courses = self.db.get_all_courses()
-            return render_template("listcourses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+        if 'user_type' in session:
+            if self.permission == "admin":
+                courses = self.db.get_all_courses()
+                return render_template("listcourses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+            return flask.redirect("/")
         return flask.redirect("/")
 
-class adminCreateGroupView(MethodView):
-    def __init__(self, database):
-        self.db = database
+class adminCreateGroupView(AdminView):
     def get(self):
-        if 'userGId' in session:
-            teachers = self.db.get_all_teachers()
-            courses = self.db.get_all_courses()
-            return render_template("creategroup.html",teachers=teachers, courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+        if 'user_type' in session:
+            if self.permission == "admin":
+                teachers = self.db.get_all_teachers()
+                courses = self.db.get_all_courses()
+                return render_template("creategroup.html",teachers=teachers, courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+            return flask.redirect("/")
         return flask.redirect("/")
     def post(self):
         subject = request.form.get("subject", "")
@@ -136,39 +141,26 @@ class adminCreateGroupView(MethodView):
             return flask.redirect("/")
         return flask.redirect("/admin/")
 
-class TeacherView(MethodView):
-    def __init__(self, database):
-        self.db = database
+class TeacherView(AdminView):
     def get(self):
-        if 'userGId' in session:
-            try:
-                if self.db.get_user_by_id(session['userGId']).user_type == "teacher":
+        if 'user_type' in session:
+            if self.permission == "teacher":
                     return render_template("teacher_view.html",firstName=session['first_name'], lastName=session['last_name'])
-                return flask.redirect("/")
-            except Exception as e:
-                print(e)
-                return render_template("fatalerror.html")
+            return flask.redirect("/")
         return flask.redirect("/")
 
-class StudentView(MethodView):
-    def __init__(self, database):
-        self.db = database
+class StudentView(AdminView):
     def get(self):
-        if 'userGId' in session:
-            try:
-                if self.db.get_user_by_id(session['userGId']).user_type == "teacher":
-                    if session['userGId'] == self.db.get_user_by_id(session['userGId']):
-                        return render_template("student_view.html",firstName=session['first_name'], lastName=session['last_name'])
-                    return flask.redirect("/")
-            except Exception as e:
-                print(e)
-                return render_template("fatalerror.html")
+        if 'user_type' in session:
+            if self.permission == "student":
+                return render_template("student_view.html",firstName=session['first_name'], lastName=session['last_name'])
+            return flask.redirect("/")
         return flask.redirect("/")
 
 class Logout(MethodView):
     def get(self):
-        if 'userGId' in session:
-            session.pop('userGId', None)
+        if 'user_type' in session:
+            session.pop('user_type', None)
             session.pop('first_name', None)
             session.pop('last_name', None)
             return flask.redirect("/")
