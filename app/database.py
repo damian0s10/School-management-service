@@ -56,7 +56,7 @@ class Database(object):
         cnx = self.connect()
         cursor = cnx.cursor()
         insert_query = "INSERT INTO groups(active, subjectId, teacherId) VALUES(%s,%s,%s)"
-        cursor.execute(insert_query,(group_data.active,group_data.subjectId,int(group_data.teacherId)))
+        cursor.execute(insert_query,(group_data.active,group_data.subjectId,group_data.teacherId))
         cnx.commit()
         cnx.close()
 
@@ -64,7 +64,7 @@ class Database(object):
     def get_all_courses(self):
         cnx = self.connect()
         cursor = cnx.cursor()
-        query = '''SELECT subjectId, name,description FROM subjects '''
+        query = "SELECT subjectId, name,description FROM subjects "
         cursor.execute(query)
         courses= cursor.fetchall()
         if courses:
@@ -81,7 +81,7 @@ class Database(object):
     def get_all_teachers(self):
         cnx = self.connect()
         cursor = cnx.cursor()
-        query ='''SELECT Id,
+        query ='''SELECT 
                     userGId,
                     firstName,
                     lastName,
@@ -96,14 +96,13 @@ class Database(object):
             tab = []
             for teacher in teachers:
                 u = User(
-                        userId = teacher[0],
-                        userGId = teacher[1],
-                        firstName = teacher[2],
-                        lastName = teacher[3],
-                        email = teacher[4],
-                        password = teacher[5],
-                        user_type = teacher[6],
-                        active = teacher[7])
+                        userGId = teacher[0],
+                        firstName = teacher[1],
+                        lastName = teacher[2],
+                        email = teacher[3],
+                        password = teacher[4],
+                        user_type = teacher[5],
+                        active = teacher[6])
                 tab.append(u)
             cnx.close()
             return tab
