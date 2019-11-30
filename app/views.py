@@ -94,11 +94,12 @@ class AdminView(MethodView):
         self.authorization()
 
     def authorization(self):
-        if session['user_type'] == "admin": self.permission = "admin"
-        if session['user_type'] == "teacher": self.permission = "teacher"
-        if session['user_type'] == "student": self.permission = "student"
-        else: pass
-
+        if 'user_type' in session:
+            if session['user_type'] == "admin": self.permission = "admin"
+            if session['user_type'] == "teacher": self.permission = "teacher"
+            if session['user_type'] == "student": self.permission = "student"
+            else: pass
+        return flask.redirect("/")
     def get(self):
         if 'user_type' in session:
             if self.permission == "admin":
