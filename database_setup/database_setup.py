@@ -13,7 +13,6 @@ create_tables_sql_guery=[]
 
 users='''
     CREATE TABLE users (
-    Id INT NOT NULL AUTO_INCREMENT,
     userGId varchar(50) NOT NULL,
     firstName varchar(20) NOT NULL,
     lastName varchar(20) NOT NULL,
@@ -21,7 +20,7 @@ users='''
     pass varchar(100) NOT NULL,
     user_type enum('student', 'teacher', 'admin'),
     active bool NOT NULL,
-    PRIMARY KEY(Id)
+    PRIMARY KEY(userGId)
     );'''
 
 subjects='''
@@ -36,10 +35,10 @@ groups='''
     groupId int NOT NULL AUTO_INCREMENT,
     active bool NOT NULL,
     subjectId int NOT NULL,
-    teacherId int NOT NULL,
+    teacherId varchar(50) NOT NULL,
     PRIMARY KEY(groupId),
     FOREIGN KEY(subjectId) REFERENCES subjects(subjectId),
-    FOREIGN KEY(teacherId) REFERENCES users(Id)
+    FOREIGN KEY(teacherId) REFERENCES users(userGId)
     );'''
 lessons='''
     create table lessons(
@@ -55,27 +54,27 @@ attendances='''
     create table attendances(
     attendanceId int NOT NULL AUTO_INCREMENT,
     lessonId int NOT NULL,
-    studentId int NOT NULL,
+    studentId varchar(50) NOT NULL,
     attendance bool NOT NULL,
     PRIMARY KEY(attendanceId),
     FOREIGN KEY(lessonId) REFERENCES lessons(lessonId),
-    FOREIGN KEY(studentId) REFERENCES users(Id)
+    FOREIGN KEY(studentId) REFERENCES users(userGId)
     );'''
 grades='''
     create table grades(
     gradeId int NOT NULL AUTO_INCREMENT,
     subjectId int NOT NULL,
-    studentId int NOT NULL,
+    studentId varchar(50) NOT NULL,
     grade int NOT NULL,
     PRIMARY KEY(gradeId),
     FOREIGN KEY(subjectId) REFERENCES subjects(subjectId),
-    FOREIGN KEY(studentId) REFERENCES users(Id)
+    FOREIGN KEY(studentId) REFERENCES users(userGId)
     );'''
 matches='''
     create table matches(
     matchId int NOT NULL AUTO_INCREMENT,
     groupId int NOT NULL,
-    studentId int NOT NULL,
+    studentId varchar(50) NOT NULL,
     active bool NOT NULL,
     PRIMARY KEY(matchId),
     FOREIGN KEY(groupId) REFERENCES groups(groupId)

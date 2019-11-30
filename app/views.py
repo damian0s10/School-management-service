@@ -8,6 +8,10 @@ import uuid
 
 class IndexView(MethodView):
     def get(self):
+        if 'user_type' in session:
+            if session['user_type'] == "admin": return flask.redirect("/admin/")
+            if session['user_type'] == "teacher": return flask.redirect("/teacher/")
+            if session['user_type'] == "student": return flask.redirect("/student/")
         return render_template('index.html')
         
 
@@ -16,6 +20,10 @@ class LoginView(MethodView):
         self.db = database
     
     def get(self):
+        if 'user_type' in session:
+            if session['user_type'] == "admin": return flask.redirect("/admin/")
+            if session['user_type'] == "teacher": return flask.redirect("/teacher/")
+            if session['user_type'] == "student": return flask.redirect("/student/")
         return render_template('login.html')
     
     def post(self):
@@ -44,6 +52,10 @@ class RegisterView(MethodView):
         self.db = database
     
     def get(self):
+        if 'user_type' in session:
+            if session['user_type'] == "admin": return flask.redirect("/admin/")
+            if session['user_type'] == "teacher": return flask.redirect("/teacher/")
+            if session['user_type'] == "student": return flask.redirect("/student/")
         return render_template('register.html')
     
     def post(self):
