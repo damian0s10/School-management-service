@@ -35,13 +35,22 @@ class Database(object):
         cnx.commit()
         cnx.close()
 #This method adds admin to administrators when name given
-    def add_admin(self, email):
+    def change_type(self, user_type, email):
         cnx = self.connect()
         cursor = cnx.cursor()
-        get_user_promoted_query="UPDATE users SET user_type=admin WHERE email = %s"
-        cursor.execute(get_user_promoted_query, (email,))
+        get_user_promoted_query="UPDATE users SET user_type=%s WHERE email = %s"
+        cursor.execute(get_user_promoted_query, (user_type, email,))
         cnx.commit()
         cnx.close()
+
+    def change_activity(self, value, email):
+        cnx = self.connect()
+        cursor = cnx.cursor()
+        query="UPDATE users SET active=%s WHERE email = %s"
+        cursor.execute(query, (value, email,))
+        cnx.commit()
+        cnx.close()
+
 #This method adds course, only admin can use 
     def add_course(self, course_data):
         cnx = self.connect()
@@ -89,7 +98,7 @@ class Database(object):
                     pass,
                     user_type,
                     active
-                    FROM users WHERE user_type='teacher' '''
+                    FROM users WHERE user_type='teacher' AND active = '1' '''
         cursor.execute(query)
         teachers = cursor.fetchall()
         if teachers:
@@ -111,7 +120,37 @@ class Database(object):
             return None
     
     
-
+    def get_members_by_type(self, user_type):
+            cnx = self.connect()
+            cursor = cnx.cursor()
+            query ='''SELECT 
+                        userGId,
+                        firstName,
+                        lastName,
+                        email,
+                        pass,
+                        user_type,
+                        active
+                        FROM users WHERE user_type=%s AND active = 1'''
+            cursor.execute(query, (user_type,))
+            members = cursor.fetchall()
+            if members:
+                tab = []
+                for member in members:
+                    u = User(
+                            userGId = member[0],
+                            firstName = member[1],
+                            lastName = member[2],
+                            email = member[3],
+                            password = member[4],
+                            user_type = member[5],
+                            active = member[6])
+                    tab.append(u)
+                cnx.close()
+                return tab
+            else:
+                cnx.close()
+                return None
 
     '''
     def add_student_to_group(self, groupId, userGId):

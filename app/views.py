@@ -118,7 +118,93 @@ class AdminView(UserView):
             return render_template("admin_view.html",firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
 
-class adminAddCourseView(UserView):
+class AdminUsersView(UserView):
+    def user_error(self, template):
+        try:
+            teachers = self.db.get_members_by_type("teacher")
+            students = self.db.get_members_by_type("student")
+            return render_template(template,
+                                    firstName=session['first_name'],
+                                    lastName=session['last_name'],
+                                    teachers=teachers,
+                                    students=students,
+                                    )
+        except Exception as e:
+            print(e)
+            return render_template("fatal_error.html")
+        
+    def get(self):
+        if self.permission == "admin":
+            try:
+                teachers = self.db.get_members_by_type("teacher")
+                students = self.db.get_members_by_type("student")
+                return render_template("users_management.html",
+                                        firstName=session['first_name'],
+                                        lastName=session['last_name'],
+                                        teachers=teachers,
+                                        students=students)
+            except Exception as e:
+                print(e)
+        return flask.redirect("/")
+
+    def post(self):
+        user_email = request.form.get("user_email", "")
+        option =  request.form.get("action", "")
+        try:
+            user = self.db.get_user_by_email(user_email)
+        except Exception as e:
+                print(e)
+                return self.user_error("fatal_error.html")
+        if option == "add_teacher":
+            if user:
+                if user.user_type == "student":
+                    try:
+                        self.db.change_type("teacher", user_email)
+                        return flask.redirect("/admin/users_management/")
+                    except Exception as e:
+                        print(e)
+                        return self.user_error("fatal_error.html")    
+                return self.user_error("already_added.html")
+            return self.user_error("no_user.html")
+        if option == "delete_teacher":
+            if user:
+                if user.active == 1:
+                    try:
+                        self.db.change_activity(0, user_email)
+                        return flask.redirect("/admin/users_management/")
+                    except Exception as e:
+                        print(e)
+                        return self.user_error("fatal_error.html")
+                return self.user_error("already_deleted.html")   
+            return self.user_error("no_user.html")
+        if option == "delete_student":
+                if user:
+                    if user.active == 1:
+                        try:
+                            self.db.change_activity(0 , user_email)
+                            return flask.redirect("/admin/users_management/")
+                        except Exception as e:
+                            print(e)
+                            return self.user_error("fatal_error.html")
+                        return self.user_error("already_deleted.html")
+                return self.user_error("no_user.html")
+            
+        if option == "reboot_student":
+            if user:
+                if user.active == 0:
+                    try:
+                        self.db.change_activity(1 , user_email)
+                        return flask.redirect("/admin/users_management/")
+                    except Exception as e:
+                        print(e)
+                        return self.user_error("fatal_error.html")
+                return self.user_error("already_added.html")
+            return self.user_error("no_user.html")
+
+        return flask.redirect("/admin/users_management/")
+        
+    
+class AdminAddCourseView(UserView):
     def get(self):
         if self.permission == "admin":
             return render_template("createcourse.html",firstName=session['first_name'], lastName=session['last_name'])
@@ -135,14 +221,14 @@ class adminAddCourseView(UserView):
             return flask.redirect("/")
         return flask.redirect("/admin/")
 
-class adminCoursesView(UserView):
+class AdminCoursesView(UserView):
     def get(self):
         if self.permission == "admin":
             courses = self.db.get_all_courses()
             return render_template("listcourses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
 
-class adminCreateGroupView(UserView):
+class AdminCreateGroupView(UserView):
     def get(self):
         if self.permission == "admin":
             teachers = self.db.get_all_teachers()

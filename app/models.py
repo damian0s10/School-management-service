@@ -1,12 +1,12 @@
 class User(object):
-    def __init__(self, userGId, firstName, lastName, email, password, active, user_type="student"):
+    def __init__(self, userGId, firstName, lastName, email, password, active=True, user_type="student"):
         self.userGId = userGId
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.password = password
         self.user_type = user_type
-        self.active = True
+        self.active = active
     
 class Group(object):
     def __init__(self, subjectId, teacherId, groupId=None, active=True):
