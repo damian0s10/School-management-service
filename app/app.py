@@ -25,15 +25,19 @@ if __name__ == '__main__':
     adminView = AdminView.as_view('admin_view', database = db)
     app.add_url_rule('/admin/', view_func=adminView, methods=['GET',])
 
-    adminAddCourseView = adminAddCourseView.as_view('adminAddCourseView', database = db)
+    adminUsersView = AdminUsersView.as_view('adminUsers_view', database = db)
+    app.add_url_rule('/admin/users_management/', view_func=adminUsersView, methods=['GET',])
+    app.add_url_rule('/admin/users_management/', view_func=adminUsersView, methods=['POST',])
+
+    adminAddCourseView = AdminAddCourseView.as_view('adminAddCourseView', database = db)
     app.add_url_rule('/admin/createcourse/', view_func=adminAddCourseView, methods=['GET',])
     app.add_url_rule('/admin/createcourse/', view_func=adminAddCourseView, methods=['POST',])
 
-    adminCoursesView = adminCoursesView.as_view('adminCoursesView', database = db)
+    adminCoursesView = AdminCoursesView.as_view('adminCoursesView', database = db)
     app.add_url_rule('/admin/courses/', view_func=adminCoursesView, methods=['GET',])
     
 
-    adminCreateGroupView = adminCreateGroupView.as_view('adminCreateGroupView', database = db)
+    adminCreateGroupView = AdminCreateGroupView.as_view('adminCreateGroupView', database = db)
     app.add_url_rule('/admin/creategroup/', view_func=adminCreateGroupView, methods=['GET',])
     app.add_url_rule('/admin/creategroup/', view_func=adminCreateGroupView, methods=['POST',])
 
