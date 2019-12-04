@@ -1,0 +1,36 @@
+{% extends "admin_view.html" %}
+{% block content %}
+{% block statement %}
+{% endblock %}
+<form class='users_management' action='/admin/users_management/' method="POST">
+        <label><p>email:</p> <input type='text' name='user_email' ></label>
+            <select name="action">
+                <option value ="add_teacher">Dodaj nauczyciela</option>
+                <option value ="delete_teacher">Usuń nauczyciela</option>
+            </select>
+        <div><input  type='submit' value='Zatwierdź'></div>
+        {% block statement_teacher %}
+        {% endblock %}
+        <label>Nauczyciele:</label>
+        {%for teacher in teachers%}
+            <p>{{teacher.firstName}} {{teacher.lastName}} emali: {{teacher.email}} {{teacher.active}}</p>
+        {%endfor%}
+</form>
+<form class='users_management' action='/admin/users_management/' method="POST">
+        <label><p>email:</p> <input type='text' name='user_email' ></label>
+        <select name="action">
+            <option value ="delete_student">Usuń studenta</option>
+            <option value ="reboot_student">Przywróć studenta</option>
+        </select>
+        <div><input type='submit' value='Zatwierdź'></div>
+        {% block statement_student %}
+        {% endblock %}
+        <label>Studenci:</label>
+        {%for student in students%}
+            <p>{{student.firstName}} {{student.lastName}} emali: {{student.email}} {{student.active}}</p>
+        {%endfor%}
+        
+       
+        
+</form>
+{% endblock %}
