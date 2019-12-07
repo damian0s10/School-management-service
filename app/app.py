@@ -44,6 +44,16 @@ if __name__ == '__main__':
     teacherView = TeacherView.as_view('teacher_view', database = db)
     app.add_url_rule('/teacher/', view_func=teacherView, methods=['GET',])
 
+    studentCoursesView = StudentCoursesView.as_view('studentCoursesView', database = db)
+    app.add_url_rule('/student/courses/', view_func=studentCoursesView, methods=['GET',])
+    app.add_url_rule('/student/courses/', view_func=studentCoursesView, methods=['POST',])
+
+    studentGroupsView = StudentGroupsView.as_view('studentGroupsView', database = db)
+    app.add_url_rule('/student/courses/<subjectId>', view_func=studentGroupsView, methods=['GET',])
+
+    studentLessonsView = StudentLessonsView.as_view('studentLessonsView', database = db)
+    app.add_url_rule('/student/courses/lessons<groupId>', view_func=studentLessonsView, methods=['GET',])
+
     logoutView = Logout.as_view("logout_view")
     app.add_url_rule('/logout/', view_func=logoutView, methods=['GET',])
     app.run(debug=True)

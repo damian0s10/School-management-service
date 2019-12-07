@@ -273,3 +273,50 @@ class Database(object):
         cnx.commit()
         cnx.close()
 
+    def get_group_by_subjectid(self, subjectId):
+        cnx = self.connect()
+        cursor = cnx.cursor()
+        get_query='''SELECT groupId,
+                    subjectId,
+                    teacherId
+                    FROM groups WHERE subjectId= %s and active=1'''
+        cursor.execute(get_query, (subjectId,) )          
+        groups = cursor.fetchall()
+        if groups:
+            tab = []
+            for group in groups:
+                g = Group(
+                        groupId = group[0],
+                        subjectId = group[1],
+                        teacherId = group[2])
+                tab.append(g)
+            cnx.close()
+            return tab
+        else:
+            cnx.close()
+            return None
+     
+    def get_lessons_by_groupid(self, groupId):
+        cnx = self.connect()
+        cursor = cnx.cursor()
+        get_query='''SELECT groupId,
+                    classroom,
+                    dateValue,
+                    timeValue
+                    FROM lessons WHERE groupId= %s'''
+        cursor.execute(get_query, (groupId,) )          
+        lessons = cursor.fetchall()
+        if lessons:
+            tab = []
+            for lesson in lessons:
+                l = Lesson(
+                        groupId = lesson[0],
+                        classroom = lesson[1],
+                        dateValue = lesson[2],
+                        timeValue = lesson[3])
+                tab.append(l)
+            cnx.close()
+            return tab
+        else:
+            cnx.close()
+            return None   

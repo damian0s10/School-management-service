@@ -53,6 +53,7 @@ class LoginView(IndexView):
             session['user_type'] = user.user_type
             session['first_name'] = user.firstName
             session['last_name'] = user.lastName
+            session['userGId'] = user.userGId
             if user.user_type == "admin": return flask.redirect("/admin/")
             if user.user_type == "teacher": return flask.redirect("/teacher/")
             return flask.redirect("/student/")
@@ -225,7 +226,7 @@ class AdminCoursesView(UserView):
     def get(self):
         if self.permission == "admin":
             courses = self.db.get_all_courses()
-            return render_template("listcourses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+            return render_template("list_courses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
 
 class AdminCreateGroupView(UserView):
@@ -259,12 +260,38 @@ class StudentView(UserView):
             return render_template("student_view.html",firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
 
+class StudentCoursesView(UserView):
+    def get(self):
+        if self.permission == "student":
+            courses = self.db.get_all_courses()
+            return render_template("student_courses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+        return flask.redirect("/")
+
+class StudentGroupsView(UserView):
+    def get(self, subjectId):
+        if self.permission == "student":
+            groups = self.db.get_group_by_subjectid(subjectId)
+            for group in groups:
+                teacher = self.db.get_user_by_id(group.teacherId)
+                group.teacherId = teacher.firstName + ' ' + teacher.lastName
+            return render_template("student_groups.html", groups = groups)
+        return flask.redirect("/")
+
+class StudentLessonsView(UserView):
+    def get(self, groupId):
+        if self.permission == "student":
+            lessons = self.db.get_lessons_by_groupid(groupId)
+            return render_template("student_lessons.html", lessons = lessons)
+        return flask.redirect("/")
+    
+
 class Logout(MethodView):
     def get(self):
         if 'user_type' in session:
             session.pop('user_type', None)
             session.pop('first_name', None)
             session.pop('last_name', None)
+            session.pop('userGId', None)
             return flask.redirect("/")
         return flask.redirect("/")
 
