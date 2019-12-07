@@ -1,0 +1,10 @@
+{% extends "student_view.html" %}
+{% block content %}
+{% for lesson in lessons %}
+<h2>Terminy zajęć: </h2>
+<p>{{ lesson.dateValue }}</p>
+<p>{{ lesson.timeValue }}</p>
+<p>{{ lesson.classroom }}</p>
+<br/>
+{% endfor %}
+{% endblock %}

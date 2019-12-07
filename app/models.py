@@ -27,4 +27,9 @@ class Course(object):
         self.description = description
         self.subjectId = subjectId
 
-
+class Lesson(object):
+    def __init__(self, groupId, classroom, dateValue, timeValue):
+        self.groupId = groupId
+        self.classroom = classroom
+        self.dateValue = dateValue
+        self.timeValue = timeValue

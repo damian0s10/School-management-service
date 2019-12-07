@@ -168,3 +168,6 @@ main .container {
     width: 300px;
     height: 100px;
 }
+.content p, .content a {
+    color: black;
+}
