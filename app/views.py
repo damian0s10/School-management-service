@@ -6,7 +6,7 @@ from passlib.hash import pbkdf2_sha256
 from flask.views import MethodView
 import uuid
 
-class IndexView(MethodView):
+class AuthorizationView(MethodView):
     def __init__(self):
         self.permission = None
         self.authorization()
@@ -19,6 +19,7 @@ class IndexView(MethodView):
             else: self.permission = None
         else: self.permission = None
 
+class IndexView(AuthorizationView):
     def get(self):
         if self.permission == "admin": return render_template("admin_view.html",firstName=session['first_name'], lastName=session['last_name'])
         if self.permission == "teacher": return render_template("teacher_view.html",firstName=session['first_name'], lastName=session['last_name'])
@@ -26,7 +27,7 @@ class IndexView(MethodView):
         return render_template('index.html')
         
 
-class LoginView(IndexView):
+class LoginView(AuthorizationView):
     def __init__(self, database):
         super(LoginView, self).__init__()
         self.db = database
@@ -40,6 +41,9 @@ class LoginView(IndexView):
     def post(self):
         email = request.form.get("email", "")
         password = request.form.get("pass", "")
+        if email == "" or password == "":
+            return render_template("login.html")
+
         try:
             user = self.db.get_user_by_email(email)
         except Exception as e:
@@ -58,7 +62,7 @@ class LoginView(IndexView):
             return flask.redirect("/student/")
         return render_template("incorrectpass.html")
 
-class RegisterView(IndexView):
+class RegisterView(AuthorizationView):
     def __init__(self, database):
         super(RegisterView, self).__init__()
         self.db = database
@@ -99,8 +103,7 @@ class RegisterView(IndexView):
 
 
 class UserView(MethodView):
-    def __init__(self, database):
-        self.db = database
+    def __init__(self):
         self.permission = None
         self.authorization()
 
@@ -119,7 +122,7 @@ class AdminView(UserView):
         return flask.redirect("/")
 
 class AdminUsersView(UserView):
-    def user_error(self, template):
+    def render_user_error(self, template):
         try:
             teachers = self.db.get_members_by_type("teacher")
             students = self.db.get_members_by_type("student")
@@ -147,6 +150,7 @@ class AdminUsersView(UserView):
                 print(e)
         return flask.redirect("/")
 
+# wszystko źle, wywal to 
     def post(self):
         user_email = request.form.get("user_email", "")
         option =  request.form.get("action", "")
@@ -155,16 +159,13 @@ class AdminUsersView(UserView):
         except Exception as e:
                 print(e)
                 return self.user_error("fatal_error.html")
-        if option == "add_teacher":
-            if user:
-                if user.user_type == "student":
+        if option == "add_teacher" and user and user.user_type=="student":
                     try:
                         self.db.change_type("teacher", user_email)
                         return flask.redirect("/admin/users_management/")
                     except Exception as e:
                         print(e)
                         return self.user_error("fatal_error.html")    
-                return self.user_error("already_added.html")
             return self.user_error("no_user.html")
         if option == "delete_teacher":
             if user:

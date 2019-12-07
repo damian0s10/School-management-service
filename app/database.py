@@ -11,13 +11,25 @@ class Database(object):
         
 #This method establish connection to database. 
     def connect(self):
-        cnx = connect(user=self.user,
-                      host=self.host,
-                      password=self.password,
-                      database=self.database,
-                      port=self.port,
-                      )
-        return cnx
+        return connect(
+            user=self.user,
+            host=self.host,
+            password=self.password,
+            database=self.database,
+            port=self.port,
+            )
+
+    def createUser(self, user):
+
+    def updateUser(self, id, user):
+
+    def getUser(self, params):
+
+    def getUsers(self, params):
+
+    def deleteUser(self, id):
+    
+
 
 #This method adds user to database
     def add_user(self, user_data):
@@ -43,6 +55,7 @@ class Database(object):
         cnx.commit()
         cnx.close()
 
+    # update
     def change_activity(self, value, email):
         cnx = self.connect()
         cursor = cnx.cursor()
@@ -52,6 +65,7 @@ class Database(object):
         cnx.close()
 
 #This method adds course, only admin can use 
+# create
     def add_course(self, course_data):
         cnx = self.connect()
         cursor = cnx.cursor()
@@ -86,6 +100,8 @@ class Database(object):
         else:
             cnx.close()
             return None
+
+# nigdy nie pobieraj wszystkiego z tavblei, zróbcie paginację            
 #This methon gets all teachers, only admin can use
     def get_all_teachers(self):
         cnx = self.connect()
