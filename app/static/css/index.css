@@ -1,7 +1,6 @@
 p,a, h1, h2, h3 {
     margin: 0;
     padding: 0;
-    color: white;
     text-decoration: none;
 }
 body {
@@ -16,13 +15,13 @@ body {
     font-size: 50px;
 }
 header {
-    background-color: #333333;#333333;
+    background-color: #333333;
     display: flex;
     justify-content: space-around;
     align-items: center;
     position: sticky;
     top: 0;
-    min-height: 120px;
+    min-height: 100px;
 }
 .fa-bars {
     color: white;
@@ -65,8 +64,12 @@ footer p {
 .navbar_log i {
     padding: 5px;
 }
+.navbar_log a {
+    color: white;
+}
 .nav_item {
-    padding: 10px;   
+    padding: 10px;  
+    color: white; 
 }
 
 .nav_item:hover {
@@ -86,7 +89,7 @@ main .container {
     display: flex;
 }
 .content {
-    min-width: 500px;
+    min-width: 400px;
     max-width: 800px;
     margin:50px auto 50px auto;
     background: #eee;
@@ -94,11 +97,11 @@ main .container {
     color: black;
 }
 .content form {
-    padding: 50px 0 15px 0;
     margin-left: auto;
     margin-right: auto;
     display: flex;
     flex-direction: column;
+    padding: 20px;
     
 }
 .content form div {
@@ -107,6 +110,7 @@ main .container {
 }
 .content form input[type="submit"] {
     width: 100px;
+    margin: 10px
 }
 .content form label {
     padding: 10px 30px 10px 30px;
@@ -118,7 +122,6 @@ main .container {
     margin: 0 10px 0 10px;
 }
 .content p {
-    color: black;
     display: block;
 }
 
@@ -136,7 +139,7 @@ main .container {
     align-items: center;
     padding: 50px 10px 50px 10px;
 }
-.sidebutton {
+.sidenav a {
     display: flex;
     width:100%;
     min-height:40px;
@@ -147,9 +150,8 @@ main .container {
     align-items: center;
     font-family: 'Source Code Pro', monospace;
     font-weight: 200;
-    
 }
-.sidebutton:hover {
+.sidenav a:hover {
     background: #461414;
     border-radius: 5px;
     cursor: pointer;
@@ -168,6 +170,66 @@ main .container {
     width: 300px;
     height: 100px;
 }
-.content p, .content a {
-    color: black;
+
+.course {
+    padding: 20px;
+}
+.courseTitle {
+    font-weight: 700;
+    font-size: 20px;
+}
+.addCourse input, .addCourse textarea {
+    margin: 10px;
+}
+.createGroup {
+    padding: 20px;
+}
+.createGroup p {
+    margin: 10px;
+}
+.createGroup select {
+    margin: 10px;
+}
+.redButton {
+    background: #660033;
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 5px;
+    border-color: #660033;
+    color: white;
+    cursor: pointer;
+}
+.group {
+    margin: 20px;
+}
+.groupItem {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.groupItem p {
+    margin: 5px;
+}
+.lesson {
+    margin:20px;
+}
+ h2 {
+    text-align: center;
+    padding: 10px;
+}
+.containerImg {
+    max-width: 600px;
+    padding: 5px;
+    margin: 10px auto;
+}
+.containerImg img {
+    width: 100%;
+}
+.indexText {
+    text-align: justify;
+    padding: 10px 20px;
+}
+.content h1 {
+    text-align: center;
+    padding: 10px;
 }

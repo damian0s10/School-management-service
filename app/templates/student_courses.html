@@ -1,10 +1,11 @@
 {% extends "student_view.html" %}
 {% block content %}
-
-
 {% for course in courses %}
-<a href="{{ '/student/courses/%s'%course.subjectId }}">{{ course.name }} </a>
-<p>{{ course.description }}</p>
+<div class="course">
+<p class="courseTitle">{{ course.name }}</p>
+<a  href="{{ '/student/courses/%s'%course.subjectId }}"><button class="redButton">Zobacz grupy</button></a>
+<p class="courseDescription">{{ course.description }}</p>
+</div>
 {% endfor %}
 
 {% endblock %}

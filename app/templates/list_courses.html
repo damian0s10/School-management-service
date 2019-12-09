@@ -1,9 +1,11 @@
 {% extends "admin_view.html" %}
 {% block content %}
-<ul>
+
 {% for course in courses %}
-<h3>{{ course.name }}</h3>
-<p>{{ course.description }}</p>
+<div class="course">
+    <p class="courseTitle">{{ course.name }}</p>
+    <p class="courseDescription">{{ course.description }}</p>
+</div>
 {% endfor %}
-</ul>
+
 {% endblock %}

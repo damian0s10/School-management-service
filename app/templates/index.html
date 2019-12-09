@@ -21,12 +21,27 @@
     <main>
         <div class="container">
             <div class="content">
+                {% block content %} 
+                <h1>Zapisz się na zajęcia</h1>
+                <div class='containerImg'>
+                    <img src='./static/img/programing.jpg' alt='Osoba pisząca kod na laptopie'>
+                </div> 
+                <p class="indexText">
+                    Zacznij programować z akademią programowania. Jesteśmy największą szkołą programowania w polsce.
+                    Oferujemy naukę wielu języków programowania w różnych stopniach zaawansowania. Z nami zostaniesz programistą w pół roku.
+                    Zarejestruj się i zapisz do wybranej grupy. Nie zwlekaj.
+                </p>
+                {% endblock %}
                 {% block form %}
                 {% endblock %}
                 {% block statement %}
                 {% endblock %}
+            
             </div>
+        
         </div>
+        
+        
     </main> 
     
 <footer><p>© 2019 Akademia programowania</p></footer>  
