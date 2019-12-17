@@ -3,29 +3,21 @@ from models import *
 
 class Database(object):
     def __init__(self, hostName, port,  userName, password, database):
-        self.host = hostName
-        self.port = port
-        self.database = database
-        self.user = userName
-        self.password = password
-        self.connection = self.connect()
+        self.connection = self.connect(hostName, port,  userName, password, database)
         
     #This method establish connection to database. 
-    def connect(self):
-        connection = connect(
-            user=self.user,
-            host=self.host,
-            password=self.password,
-            database=self.database,
-            port=self.port,
+    def connect(self, hostName, port,  userName, password, database):
+        return connect(
+            user=userName,
+            host=hostName,
+            password=password,
+            database=database,
+            port=port,
             )
-        return connection
        
 #####################################  USER  ###############################################
 
-    #######  CREATE USER  #######
-
-    def createUser(self, user_data):
+    def insertUser(self, user_data):
         cursor = self.connection.cursor()
         insert_query = '''INSERT INTO
                             users(
@@ -49,8 +41,6 @@ class Database(object):
         self.connection.commit()
         cursor.close()
 
-
-    #######  UPDATE USER  #######
 
     def updateUser(self, user_data, email):
         cursor = self.connection.cursor()
@@ -76,8 +66,6 @@ class Database(object):
         self.connection.commit()
         cursor.close()
 
-
-    #######  GET USER  #######
 
     def getUser(self, email = '', userGId = ''):
         cursor = self.connection.cursor()
@@ -109,19 +97,23 @@ class Database(object):
         return None
 
 
-    #######  GET USERS  #######
 
     def getUsers(self, user_type, limit=10, index=0):
             cursor = self.connection.cursor()
             query ='''SELECT 
-                        userGId,
-                        firstName,
-                        lastName,
-                        email,
-                        pass,
-                        user_type,
-                        active
-                        FROM users WHERE user_type=%s AND active=1 LIMIT %s OFFSET %s '''
+                            userGId,
+                            firstName,
+                            lastName,
+                            email,
+                            pass,
+                            user_type,
+                            active
+                        FROM
+                            users 
+                        WHERE user_type=%s AND active=1
+                        LIMIT %s OFFSET %s; '''
+
+                        
             cursor.execute(query, (user_type, limit, index))
             members = cursor.fetchall()
             if members:
@@ -143,14 +135,9 @@ class Database(object):
                 return None
 
 
-    #######  DELETE USER  #######
-
     def deleteUser(self, email):
         cursor = self.connection.cursor()
-        delete_query='''DELETE FROM
-                            users
-                        WHERE 
-                            email=%s'''
+        delete_query="DELETE FROM users WHERE email=%s"
         cursor.execute(
             delete_query,
             (email,))
@@ -160,9 +147,7 @@ class Database(object):
 ####################################  COURSE  ##############################################
 
 
-    ######### CREATE COURSE ########
-
-    def createCourse(self, course_data):
+    def insertCourse(self, course_data):
         cursor = self.connection.cursor()
         insert_query = "INSERT INTO subjects(name, description) VALUES(%s,%s)"
         cursor.execute(insert_query,(course_data.name,course_data.description))
@@ -170,33 +155,27 @@ class Database(object):
         cursor.close()
 
 
-    ######### GET COURSES ########
 
     def getCourses(self, limit = 10, index = 0):
         cursor = self.connection.cursor()
         get_query = "SELECT subjectId, name,description FROM subjects LIMIT %s OFFSET %s"
         cursor.execute(get_query,(limit, index))
         courses= cursor.fetchall()
-        if courses:
-            tab = []
-            for course in courses:
-                c = Course(subjectId = course[0], name = course[1], description = course[2])
-                tab.append(c)
-            cursor.close()
-            return tab
-        else:
+        if not courses:
             cursor.close()
             return None
+        tab = []
+        for course in courses:
+            c = Course(subjectId = course[0], name = course[1], description = course[2])
+            tab.append(c)
+        cursor.close()
+        return tab
 
 
-    #######  DELETE COURSE  #######
 
     def deleteCourse(self, courseId):
         cursor = self.connection.cursor()
-        delete_query='''DELETE FROM
-                            courses
-                        WHERE 
-                            courseId=%s'''
+        delete_query="DELETE FROM courses WHERE courseId=%s"
         cursor.execute(
             delete_query,
             (courseId,))
@@ -205,9 +184,8 @@ class Database(object):
 
 ####################################   GROUP   #########################################
 
-    ######### CREATE GROUP ########
  
-    def createGroup(self, group_data):
+    def insertGroup(self, group_data):
         cursor = self.connection.cursor()
         insert_query = '''INSERT INTO groups
                             (active,
@@ -223,7 +201,6 @@ class Database(object):
         cursor.close()
   
     
-    ######## UPDATE GROUP ########
 
     def updateGroup(self, group_data, groupId):
         cursor = self.connection.cursor()
@@ -244,7 +221,6 @@ class Database(object):
         cursor.close()
 
     
-    ######## GET GROUPS ########
 
     def getGroups(self, subjectId, limit = 10, index = 0):
         cursor = self.connection.cursor()
@@ -268,14 +244,10 @@ class Database(object):
             cursor.close()
             return None
 
-        #######  DELETE GROUP  #######
 
     def deleteGroup(self, groupId):
         cursor = self.connection.cursor()
-        delete_query='''DELETE FROM
-                            groups
-                        WHERE 
-                            groupId=%s'''
+        delete_query="DELETE FROM groups WHERE groupId=%s"
         cursor.execute(
             delete_query,
             (groupId,))
@@ -285,7 +257,6 @@ class Database(object):
 
 ######################################### LESSON ####################################
 
-    ########## GET LESSONS ##########
 
     def getLessons(self, groupId, limit = 5, index = 0):
         cursor = self.connection.cursor()

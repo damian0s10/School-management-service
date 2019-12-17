@@ -92,7 +92,7 @@ class RegisterView(IndexView):
                  user_type = 'student',
                  active = True)
         try:        
-            self.db.createUser(user)
+            self.db.insertUser(user)
         except Exception as e:
             print(e)
             return render_template("fatalerror.html") 
@@ -124,15 +124,15 @@ class AdminUsersView(UserView):
         try:
             teachers = self.db.getUsers(user_type="teacher")
             students = self.db.getUsers(user_type="student")
-            return render_template(template,
+        except Exception as e:
+            print(e)
+            return render_template("fatal_error.html")
+        return render_template(template,
                                     firstName=session['first_name'],
                                     lastName=session['last_name'],
                                     teachers=teachers,
                                     students=students,
                                     )
-        except Exception as e:
-            print(e)
-            return render_template("fatal_error.html")
         
     def get(self):
         if self.permission == "admin":
@@ -220,7 +220,7 @@ class AdminAddCourseView(UserView):
         description = request.form.get("description", "")
         course = Course(name,description)
         try:
-            self.db.createCourse(course)
+            self.db.insertCourse(course)
         except Exception as e:
             print(e)
             return flask.redirect("/")
@@ -246,7 +246,7 @@ class AdminCreateGroupView(UserView):
         teacher = request.form.get("teacher", "")
         group = Group(subjectId = subject, teacherId = teacher)
         try:
-            self.db.createGroup(group)
+            self.db.insertGroup(group)
         except Exception as e:
             print(e)
             return flask.redirect("/")
