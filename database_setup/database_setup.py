@@ -18,7 +18,7 @@ users='''
     lastName varchar(20) NOT NULL,
     email varchar(40) NOT NULL,
     pass varchar(100) NOT NULL,
-    user_type enum('student', 'teacher', 'admin'),
+    user_type ENUM('student', 'teacher', 'admin'),
     active bool NOT NULL,
     PRIMARY KEY(userGId)
     );'''

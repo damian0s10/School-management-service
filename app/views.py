@@ -41,7 +41,7 @@ class LoginView(IndexView):
         email = request.form.get("email", "")
         password = request.form.get("pass", "")
         try:
-            user = self.db.get_user_by_email(email)
+            user = self.db.getUser(email)
         except Exception as e:
             print(e)
             return render_template("fatalerror.html")
@@ -78,13 +78,13 @@ class RegisterView(IndexView):
         userGId = str(uuid.uuid1())
 
         try:
-            if self.db.get_user_by_email(email):
+            if self.db.getUser(email):
                 return render_template("incorrectemail.html")
         except Exception as e:
             print(e)
             return render_template("fatalerror.html") 
 
-        us = User(userGId = userGId,
+        user = User(userGId = userGId,
                  firstName = firstName,
                  lastName = lastName,
                  email = email,
@@ -92,7 +92,7 @@ class RegisterView(IndexView):
                  user_type = 'student',
                  active = True)
         try:        
-            self.db.add_user(us)
+            self.db.insertUser(user)
         except Exception as e:
             print(e)
             return render_template("fatalerror.html") 
@@ -122,23 +122,23 @@ class AdminView(UserView):
 class AdminUsersView(UserView):
     def user_error(self, template):
         try:
-            teachers = self.db.get_members_by_type("teacher")
-            students = self.db.get_members_by_type("student")
-            return render_template(template,
+            teachers = self.db.getUsers(user_type="teacher")
+            students = self.db.getUsers(user_type="student")
+        except Exception as e:
+            print(e)
+            return render_template("fatal_error.html")
+        return render_template(template,
                                     firstName=session['first_name'],
                                     lastName=session['last_name'],
                                     teachers=teachers,
                                     students=students,
                                     )
-        except Exception as e:
-            print(e)
-            return render_template("fatal_error.html")
         
     def get(self):
         if self.permission == "admin":
             try:
-                teachers = self.db.get_members_by_type("teacher")
-                students = self.db.get_members_by_type("student")
+                teachers = self.db.getUsers(user_type="teacher")
+                students = self.db.getUsers(user_type="student")
                 return render_template("users_management.html",
                                         firstName=session['first_name'],
                                         lastName=session['last_name'],
@@ -152,7 +152,7 @@ class AdminUsersView(UserView):
         user_email = request.form.get("user_email", "")
         option =  request.form.get("action", "")
         try:
-            user = self.db.get_user_by_email(user_email)
+            user = self.db.getUser(user_email)
         except Exception as e:
                 print(e)
                 return self.user_error("fatal_error.html")
@@ -160,7 +160,8 @@ class AdminUsersView(UserView):
             if user:
                 if user.user_type == "student":
                     try:
-                        self.db.change_type("teacher", user_email)
+                        user.user_type = "teacher"
+                        self.db.updateUser(user, user_email)
                         return flask.redirect("/admin/users_management/")
                     except Exception as e:
                         print(e)
@@ -171,7 +172,8 @@ class AdminUsersView(UserView):
             if user:
                 if user.active == 1:
                     try:
-                        self.db.change_activity(0, user_email)
+                        user.active = 0
+                        self.db.updateUser(user, user_email)
                         return flask.redirect("/admin/users_management/")
                     except Exception as e:
                         print(e)
@@ -182,7 +184,8 @@ class AdminUsersView(UserView):
                 if user:
                     if user.active == 1:
                         try:
-                            self.db.change_activity(0 , user_email)
+                            user.active = 0
+                            self.db.updateUser(user, user_email)
                             return flask.redirect("/admin/users_management/")
                         except Exception as e:
                             print(e)
@@ -194,7 +197,8 @@ class AdminUsersView(UserView):
             if user:
                 if user.active == 0:
                     try:
-                        self.db.change_activity(1 , user_email)
+                        user.active = 1
+                        self.db.updateUser(user, user_email)
                         return flask.redirect("/admin/users_management/")
                     except Exception as e:
                         print(e)
@@ -216,7 +220,7 @@ class AdminAddCourseView(UserView):
         description = request.form.get("description", "")
         course = Course(name,description)
         try:
-            self.db.add_course(course)
+            self.db.insertCourse(course)
         except Exception as e:
             print(e)
             return flask.redirect("/")
@@ -225,15 +229,15 @@ class AdminAddCourseView(UserView):
 class AdminCoursesView(UserView):
     def get(self):
         if self.permission == "admin":
-            courses = self.db.get_all_courses()
+            courses = self.db.getCourses()
             return render_template("list_courses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
 
 class AdminCreateGroupView(UserView):
     def get(self):
         if self.permission == "admin":
-            teachers = self.db.get_all_teachers()
-            courses = self.db.get_all_courses()
+            teachers = self.db.getUsers("teacher")
+            courses = self.db.getCourses()
             return render_template("creategroup.html",teachers=teachers, courses=courses, firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
 
@@ -242,7 +246,7 @@ class AdminCreateGroupView(UserView):
         teacher = request.form.get("teacher", "")
         group = Group(subjectId = subject, teacherId = teacher)
         try:
-            self.db.add_group(group)
+            self.db.insertGroup(group)
         except Exception as e:
             print(e)
             return flask.redirect("/")
@@ -263,25 +267,25 @@ class StudentView(UserView):
 class StudentCoursesView(UserView):
     def get(self):
         if self.permission == "student":
-            courses = self.db.get_all_courses()
+            courses = self.db.getCourses()
             return render_template("student_courses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
 
 class StudentGroupsView(UserView):
     def get(self, subjectId):
         if self.permission == "student":
-            groups = self.db.get_group_by_subjectid(subjectId)
+            groups = self.db.getGroups(subjectId)
             for group in groups:
-                teacher = self.db.get_user_by_id(group.teacherId)
+                teacher = self.db.getUser(userGId=group.teacherId)
                 group.teacherId = teacher.firstName + ' ' + teacher.lastName
-            return render_template("student_groups.html", groups = groups)
+            return render_template("student_groups.html", groups = groups,firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
 
 class StudentLessonsView(UserView):
     def get(self, groupId):
         if self.permission == "student":
-            lessons = self.db.get_lessons_by_groupid(groupId)
-            return render_template("student_lessons.html", lessons = lessons)
+            lessons = self.db.getLessons(groupId)
+            return render_template("student_lessons.html", lessons = lessons,firstName=session['first_name'], lastName=session['last_name'])
         return flask.redirect("/")
     
 
