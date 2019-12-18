@@ -115,7 +115,6 @@ main .container {
 .content form label {
     padding: 10px 30px 10px 30px;
     display: flex;
-    justify-content: center;
     align-items: center;
 }
 .content form input {
