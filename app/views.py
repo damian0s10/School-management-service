@@ -5,6 +5,8 @@ from database import Database
 from passlib.hash import pbkdf2_sha256
 from flask.views import MethodView
 import uuid
+import logging
+
 
 class IndexView(MethodView):
     def __init__(self):
@@ -31,11 +33,11 @@ class LoginView(IndexView):
         super(LoginView, self).__init__()
         self.db = database
     
-    def get(self):
+    def get(self, template='login.html'):
         if self.permission == "admin": return flask.redirect("/admin/")
         if self.permission == "teacher": return flask.redirect("/teacher/")
         if self.permission == "student": return flask.redirect("/student/")
-        return render_template('login.html')
+        return render_template(template)
     
     def post(self):
         email = request.form.get("email", "")
@@ -44,10 +46,11 @@ class LoginView(IndexView):
             user = self.db.getUser(email)
         except Exception as e:
             print(e)
-            return render_template("fatalerror.html")
+            logging.exception("Connection to database failed")
+            return self.get(template="fatalerror.html")
 
         if not user:
-            return render_template("incorrectuser.html")
+            return self.get(template="incorrectuser.html")
         
         if pbkdf2_sha256.verify(password, user.password):
             session['user_type'] = user.user_type
@@ -57,18 +60,18 @@ class LoginView(IndexView):
             if user.user_type == "admin": return flask.redirect("/admin/")
             if user.user_type == "teacher": return flask.redirect("/teacher/")
             return flask.redirect("/student/")
-        return render_template("incorrectpass.html")
+        return self.get(template="incorrectpass.html")
 
 class RegisterView(IndexView):
     def __init__(self, database):
         super(RegisterView, self).__init__()
         self.db = database
     
-    def get(self):
+    def get(self, template='register.html'):
         if self.permission == "admin": return flask.redirect("/admin/")
         if self.permission == "teacher": return flask.redirect("/teacher/")
         if self.permission == "student": return flask.redirect("/student/")
-        return render_template('register.html')
+        return render_template(template)
     
     def post(self):
         firstName = request.form.get("fname", "")
@@ -79,12 +82,14 @@ class RegisterView(IndexView):
 
         try:
             if self.db.getUser(email):
-                return render_template("incorrectemail.html")
+                return self.get(template="incorrectemail.html")
         except Exception as e:
             print(e)
-            return render_template("fatalerror.html") 
+            logging.exception("Connection to database failed")
+            return self.get(template="fatalerror.html") 
 
-        user = User(userGId = userGId,
+        user = User(
+                 userGId = userGId,
                  firstName = firstName,
                  lastName = lastName,
                  email = email,
@@ -95,8 +100,9 @@ class RegisterView(IndexView):
             self.db.insertUser(user)
         except Exception as e:
             print(e)
-            return render_template("fatalerror.html") 
-        return render_template('account_created.html')
+            logging.exception("Connection to database failed")
+            return self.get(template="fatalerror.html") 
+        return self.get(template='account_created.html')
 
 
 class UserView(MethodView):
@@ -114,38 +120,28 @@ class UserView(MethodView):
         else: self.permission = None
 
 class AdminView(UserView):
-    def get(self):
+    def get(self, template="admin_view.html"):
         if self.permission == "admin":
-            return render_template("admin_view.html",firstName=session['first_name'], lastName=session['last_name'])
+            return render_template(
+                template,
+                firstName=session['first_name'], 
+                lastName=session['last_name'])
         return flask.redirect("/")
 
 class AdminUsersView(UserView):
-    def user_error(self, template):
-        try:
-            teachers = self.db.getUsers(user_type="teacher")
-            students = self.db.getUsers(user_type="student")
-        except Exception as e:
-            print(e)
-            return render_template("fatal_error.html")
-        return render_template(template,
-                                    firstName=session['first_name'],
-                                    lastName=session['last_name'],
-                                    teachers=teachers,
-                                    students=students,
-                                    )
-        
-    def get(self):
+    def get(self, template="users_management.html"):
         if self.permission == "admin":
             try:
                 teachers = self.db.getUsers(user_type="teacher")
                 students = self.db.getUsers(user_type="student")
-                return render_template("users_management.html",
-                                        firstName=session['first_name'],
-                                        lastName=session['last_name'],
-                                        teachers=teachers,
-                                        students=students)
+                return render_template(template,
+                                       firstName=session['first_name'],
+                                       lastName=session['last_name'],
+                                       teachers=teachers,
+                                       students=students)
             except Exception as e:
                 print(e)
+                logging.exception("Connection to database failed")
         return flask.redirect("/")
 
     def post(self):
@@ -155,7 +151,8 @@ class AdminUsersView(UserView):
             user = self.db.getUser(user_email)
         except Exception as e:
                 print(e)
-                return self.user_error("fatal_error.html")
+                logging.exception("Connection to database failed")
+                return self.get(template="fatal_error.html")
         if option == "add_teacher":
             if user:
                 if user.user_type == "student":
@@ -165,9 +162,10 @@ class AdminUsersView(UserView):
                         return flask.redirect("/admin/users_management/")
                     except Exception as e:
                         print(e)
-                        return self.user_error("fatal_error.html")    
-                return self.user_error("already_added.html")
-            return self.user_error("no_user.html")
+                        logging.exception("Connection to database failed")
+                        return self.get(template="fatal_error.html")    
+                return self.get(template="already_added.html")
+            return self.get(template="no_user.html")
         if option == "delete_teacher":
             if user:
                 if user.active == 1:
@@ -177,9 +175,10 @@ class AdminUsersView(UserView):
                         return flask.redirect("/admin/users_management/")
                     except Exception as e:
                         print(e)
-                        return self.user_error("fatal_error.html")
-                return self.user_error("already_deleted.html")   
-            return self.user_error("no_user.html")
+                        logging.exception("Connection to database failed")
+                        return self.get(template="fatal_error.html")
+                return self.get(template="already_deleted.html")   
+            return self.get(template="no_user.html")
         if option == "delete_student":
                 if user:
                     if user.active == 1:
@@ -189,9 +188,10 @@ class AdminUsersView(UserView):
                             return flask.redirect("/admin/users_management/")
                         except Exception as e:
                             print(e)
-                            return self.user_error("fatal_error.html")
-                        return self.user_error("already_deleted.html")
-                return self.user_error("no_user.html")
+                            logging.exception("Connection to database failed")
+                            return self.get(template="fatal_error.html")
+                        return self.get(template="already_deleted.html")
+                return self.get(template="no_user.html")
             
         if option == "reboot_student":
             if user:
@@ -202,9 +202,10 @@ class AdminUsersView(UserView):
                         return flask.redirect("/admin/users_management/")
                     except Exception as e:
                         print(e)
-                        return self.user_error("fatal_error.html")
-                return self.user_error("already_added.html")
-            return self.user_error("no_user.html")
+                        logging.exception("Connection to database failed")
+                        return self.get(template="fatal_error.html")
+                return self.get(template="already_added.html")
+            return self.get(template="no_user.html")
 
         return flask.redirect("/admin/users_management/")
         
@@ -249,6 +250,7 @@ class AdminCreateGroupView(UserView):
             self.db.insertGroup(group)
         except Exception as e:
             print(e)
+            logging.exception("Connection to database failed")
             return flask.redirect("/")
         return flask.redirect("/admin/")
 

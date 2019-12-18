@@ -116,23 +116,24 @@ class Database(object):
                         
             cursor.execute(query, (user_type, limit, index))
             members = cursor.fetchall()
-            if members:
-                tab = []
-                for member in members:
-                    u = User(
-                            userGId = member[0],
-                            firstName = member[1],
-                            lastName = member[2],
-                            email = member[3],
-                            password = member[4],
-                            user_type = member[5],
-                            active = member[6])
-                    tab.append(u)
-                cursor.close()
-                return tab
-            else:
+
+            if not members:
                 cursor.close()
                 return None
+            tab = []
+            for member in members:
+                u = User(
+                        userGId = member[0],
+                        firstName = member[1],
+                        lastName = member[2],
+                        email = member[3],
+                        password = member[4],
+                        user_type = member[5],
+                        active = member[6])
+                tab.append(u)
+            cursor.close()
+            return tab
+                
 
 
     def deleteUser(self, email):
@@ -230,19 +231,20 @@ class Database(object):
                     FROM groups WHERE subjectId= %s AND active=1 LIMIT %s OFFSET %s'''
         cursor.execute(get_query, (subjectId, limit, index) )          
         groups = cursor.fetchall()
-        if groups:
-            tab = []
-            for group in groups:
-                g = Group(
-                        groupId = group[0],
-                        subjectId = group[1],
-                        teacherId = group[2])
-                tab.append(g)
+        
+        if not groups:
             cursor.close()
-            return tab
-        else:
-            cursor.close()
-            return None
+            return None 
+        tab = []
+        for group in groups:
+            g = Group(
+                    groupId = group[0],
+                    subjectId = group[1],
+                    teacherId = group[2])
+            tab.append(g)
+        cursor.close()
+        return tab
+            
 
 
     def deleteGroup(self, groupId):
@@ -267,17 +269,17 @@ class Database(object):
                     FROM lessons WHERE groupId= %s LIMIT %s OFFSET %s'''
         cursor.execute(get_query, (groupId, limit, index))        
         lessons = cursor.fetchall()
-        if lessons:
-            tab = []
-            for lesson in lessons:
-                l = Lesson(
-                        groupId = lesson[0],
-                        classroom = lesson[1],
-                        dateValue = lesson[2],
-                        timeValue = lesson[3])
-                tab.append(l)
+        
+        if not lessons:
             cursor.close()
-            return tab
-        else:
-            cursor.close()
-            return None   
+            return None  
+        tab = []
+        for lesson in lessons:
+            l = Lesson(
+                    groupId = lesson[0],
+                    classroom = lesson[1],
+                    dateValue = lesson[2],
+                    timeValue = lesson[3])
+            tab.append(l)
+        cursor.close()
+        return tab 

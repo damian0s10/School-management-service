@@ -3,10 +3,17 @@ import os
 from database import Database
 from views import *
 
+
 if __name__ == '__main__':
     app = Flask(__name__)
     app.secret_key = os.urandom(24)
     db = Database("localhost", 3306, "database", "database", "database")
+    fh = logging.FileHandler('app.log')
+    logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename='app.log',
+                    filemode='w')
 
     indexView = IndexView.as_view('index_view')
     app.add_url_rule('/', view_func=indexView, methods=['GET',])
