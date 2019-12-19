@@ -7,7 +7,9 @@
         <div><p>Prowadzący: {{ group.teacherId }}</p></div>
     </div>
     <a href="{{ '/student/courses/lessons%s'%group.groupId }}"><button class="redButton">Zobacz terminy zajęć</button></a>
-    <a href="/"><button class="redButton">Zapisz się</button></a>
+    <form action="{{ '/student/courses/lessons%s'%group.groupId }}" method="POST">
+        <button name="groupId" type='submit' class="redButton" value="{{ group.groupId }}">Zapisz się</button>
+    </form>
 </div>
 {% endfor %}
 {% endblock %}

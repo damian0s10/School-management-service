@@ -283,3 +283,12 @@ class Database(object):
             tab.append(l)
         cursor.close()
         return tab 
+
+########################## Matches ################################
+
+    def insertMatch(self, match_data):
+        cursor = self.connection.cursor()
+        insert_query="INSERT INTO matches (groupId, studentId, active) VALUES (%s,%s,%s)"
+        cursor.execute(insert_query, (match_data.groupId, match_data.studentId, match_data.active))
+        self.connection.commit()
+        cursor.close()
