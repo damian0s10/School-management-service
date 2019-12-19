@@ -60,7 +60,9 @@ if __name__ == '__main__':
 
     studentLessonsView = StudentLessonsView.as_view('studentLessonsView', database = db)
     app.add_url_rule('/student/courses/lessons<groupId>', view_func=studentLessonsView, methods=['GET',])
+    app.add_url_rule('/student/courses/lessons<groupId>', view_func=studentLessonsView, methods=['POST',])
 
     logoutView = Logout.as_view("logout_view")
     app.add_url_rule('/logout/', view_func=logoutView, methods=['GET',])
+    
     app.run(debug=True)

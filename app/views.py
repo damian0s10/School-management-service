@@ -1,6 +1,6 @@
 import flask
 from flask import request, session, render_template, g
-from models import User, Course, Group
+from models import User, Course, Group, Match
 from database import Database
 from passlib.hash import pbkdf2_sha256
 from flask.views import MethodView
@@ -224,22 +224,31 @@ class AdminAddCourseView(UserView):
             self.db.insertCourse(course)
         except Exception as e:
             print(e)
+            logging.exception("Connection to database failed")
             return flask.redirect("/")
         return flask.redirect("/admin/")
 
 class AdminCoursesView(UserView):
     def get(self):
         if self.permission == "admin":
-            courses = self.db.getCourses()
-            return render_template("list_courses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+            try:
+                courses = self.db.getCourses()
+                return render_template("list_courses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+            except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
         return flask.redirect("/")
 
 class AdminCreateGroupView(UserView):
     def get(self):
         if self.permission == "admin":
-            teachers = self.db.getUsers("teacher")
-            courses = self.db.getCourses()
-            return render_template("creategroup.html",teachers=teachers, courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+            try:
+                teachers = self.db.getUsers("teacher")
+                courses = self.db.getCourses()
+                return render_template("creategroup.html",teachers=teachers, courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+            except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
         return flask.redirect("/")
 
     def post(self):
@@ -269,27 +278,52 @@ class StudentView(UserView):
 class StudentCoursesView(UserView):
     def get(self):
         if self.permission == "student":
-            courses = self.db.getCourses()
-            return render_template("student_courses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+            try:
+                courses = self.db.getCourses()
+                return render_template("student_courses.html",courses=courses, firstName=session['first_name'], lastName=session['last_name'])
+            except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
         return flask.redirect("/")
 
 class StudentGroupsView(UserView):
     def get(self, subjectId):
         if self.permission == "student":
-            groups = self.db.getGroups(subjectId)
-            for group in groups:
-                teacher = self.db.getUser(userGId=group.teacherId)
-                group.teacherId = teacher.firstName + ' ' + teacher.lastName
-            return render_template("student_groups.html", groups = groups,firstName=session['first_name'], lastName=session['last_name'])
+            try:
+                groups = self.db.getGroups(subjectId)
+                for group in groups:
+                    teacher = self.db.getUser(userGId=group.teacherId)
+                    group.teacherId = teacher.firstName + ' ' + teacher.lastName
+                return render_template("student_groups.html", groups = groups,firstName=session['first_name'], lastName=session['last_name'])
+            except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
         return flask.redirect("/")
 
 class StudentLessonsView(UserView):
-    def get(self, groupId):
+    def get(self, groupId, template="student_lessons.html"):
         if self.permission == "student":
-            lessons = self.db.getLessons(groupId)
-            return render_template("student_lessons.html", lessons = lessons,firstName=session['first_name'], lastName=session['last_name'])
+            try:
+                lessons = self.db.getLessons(groupId)
+                return render_template(template, lessons = lessons,firstName=session['first_name'], lastName=session['last_name'])
+            except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
         return flask.redirect("/")
-    
+
+    def post(self, groupId, template="student_added_to_group.html"):
+        if self.permission == "student":
+            userGId = session["userGId"]
+            groupId = request.form.get("groupId", "")
+            match = Match(groupId = groupId, studentId = userGId, active = 1)
+            try:
+                self.db.insertMatch(match)
+                return render_template(template,firstName=session['first_name'], lastName=session['last_name'])
+            except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")    
+        return flask.redirect("/")
+
 
 class Logout(MethodView):
     def get(self):
@@ -298,7 +332,6 @@ class Logout(MethodView):
             session.pop('first_name', None)
             session.pop('last_name', None)
             session.pop('userGId', None)
-            return flask.redirect("/")
         return flask.redirect("/")
 
 

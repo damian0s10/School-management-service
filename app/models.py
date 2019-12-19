@@ -16,10 +16,11 @@ class Group(object):
         self.teacherId = teacherId
 
 class Match(object):
-    def __init__(self, groupId, studentId, matchId=None):
+    def __init__(self, groupId, studentId, matchId=None,active=True):
         self.groupId = groupId
         self.studentId = studentId
         self.matchId = matchId
+        self.active = active
 
 class Course(object):
     def __init__(self, name,description, subjectId=None):
