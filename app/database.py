@@ -223,13 +223,13 @@ class Database(object):
 
     
 
-    def getGroups(self, subjectId, limit = 10, index = 0):
+    def getGroups(self, subjectId = '', teacherId = '', limit = 10, index = 0):
         cursor = self.connection.cursor()
         get_query='''SELECT groupId,
                     subjectId,
                     teacherId
-                    FROM groups WHERE subjectId= %s AND active=1 LIMIT %s OFFSET %s'''
-        cursor.execute(get_query, (subjectId, limit, index) )          
+                    FROM groups WHERE (subjectId = %s OR teacherId = %s) AND active=1 LIMIT %s OFFSET %s'''
+        cursor.execute(get_query, (subjectId, teacherId, limit, index) )          
         groups = cursor.fetchall()
         
         if not groups:
@@ -290,5 +290,15 @@ class Database(object):
         cursor = self.connection.cursor()
         insert_query="INSERT INTO matches (groupId, studentId, active) VALUES (%s,%s,%s)"
         cursor.execute(insert_query, (match_data.groupId, match_data.studentId, match_data.active))
+        self.connection.commit()
+        cursor.close()
+
+
+########################## Message #################
+
+    def insertMessage(self, message_data):
+        cursor = self.connection.cursor()
+        insert_query="INSERT INTO messages (userGId, groupId, message) VALUES (%s,%s,%s)"
+        cursor.execute(insert_query, (message_data.userGId, message_data.groupId, message_data.message))
         self.connection.commit()
         cursor.close()

@@ -62,6 +62,10 @@ if __name__ == '__main__':
     app.add_url_rule('/student/courses/lessons<groupId>', view_func=studentLessonsView, methods=['GET',])
     app.add_url_rule('/student/courses/lessons<groupId>', view_func=studentLessonsView, methods=['POST',])
 
+    teacherCreateMessageView = TeacherCreateMessageView.as_view('teacherCreateMessageView', database = db)
+    app.add_url_rule('/message/', view_func=teacherCreateMessageView, methods=['GET',])
+    app.add_url_rule('/message/', view_func=teacherCreateMessageView, methods=['POST',])
+
     logoutView = Logout.as_view("logout_view")
     app.add_url_rule('/logout/', view_func=logoutView, methods=['GET',])
     

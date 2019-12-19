@@ -34,3 +34,9 @@ class Lesson(object):
         self.classroom = classroom
         self.dateValue = dateValue
         self.timeValue = timeValue
+
+class Message(object):
+    def __init__(self, userGId, groupId, message):
+        self.userGId = userGId
+        self.groupId = groupId
+        self.message = message

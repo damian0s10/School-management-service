@@ -1,0 +1,13 @@
+{% extends "teacher_view.html" %}
+{% block content %}
+<form action='/message/' method='POST'>
+    <p>Wybierz grupę, której chcesz wysłać wiadomość</p>
+    <select name="groupId">
+        {% for group in groups %}
+        <option value="{{ group.groupId }}">Grupa numer: {{ group.groupId}}</option>
+        {% endfor %}
+    </select>
+    <textarea name="message"></textarea>
+    <button type="submit" class="redButton">Wyślij</button>
+</form>
+{% endblock %}
