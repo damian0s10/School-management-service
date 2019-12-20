@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html lang="pl">
+<head>
+	<meta charset="utf-8" />
+	<title>akademia programowania</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css')}}">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:900i&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+</head>
+<body>
+    <header>
+            <h1 class="title">akademia programowania</h1>
+            {% block nav %}
+            <nav class="navbar_log">  
+                <a class="nav_item" href='login'>Zaloguj</a>
+                <a class="nav_item" href='register'>Zarejestruj się</a>
+            </nav>
+            {% endblock %}
+    </header>
+   
+    <main>
+        <div class="container">
+            <aside>
+                <div class="sidenav">
+                    {% block sidebar %}
+                    {% endblock %}
+                </div>
+            </aside>
+            <div class="content">
+                {% block content %}
+                
+                {% endblock %}
+            </div>
+        </div>
+    </main> 
+<footer><p>© 2019 Akademia programowania</p></footer>    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>    
+<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>     
+</body>
+</html>
