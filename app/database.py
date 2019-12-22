@@ -1,6 +1,5 @@
 from mysql.connector import connect, ProgrammingError
 import models
-from app import hostName, port, userName, password, database
 
 class Database(object):
     def __init__(self, hostName, port,  userName, password, database):
@@ -303,10 +302,3 @@ class Database(object):
         cursor.execute(insert_query, (message_data.userGId, message_data.groupId, message_data.message))
         self.connection.commit()
         cursor.close()
-
-
-db = Database(hostName=hostName,
-                  port=port,
-                  userName=userName,
-                  password=password,
-                  database=database)
