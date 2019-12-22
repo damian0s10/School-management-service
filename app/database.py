@@ -1,5 +1,6 @@
 from mysql.connector import connect, ProgrammingError
-from models import *
+import models
+from app import hostName, port, userName, password, database
 
 class Database(object):
     def __init__(self, hostName, port,  userName, password, database):
@@ -82,7 +83,7 @@ class Database(object):
         cursor.execute(get_query, (email, userGId,) )
         results = cursor.fetchone()
         if results:
-            user = User(
+            user = models.User(
                 userGId = results[0],
                 firstName = results[1],
                 lastName = results[2],
@@ -122,7 +123,7 @@ class Database(object):
                 return None
             tab = []
             for member in members:
-                u = User(
+                u = models.User(
                         userGId = member[0],
                         firstName = member[1],
                         lastName = member[2],
@@ -167,7 +168,7 @@ class Database(object):
             return None
         tab = []
         for course in courses:
-            c = Course(subjectId = course[0], name = course[1], description = course[2])
+            c = models.Course(subjectId = course[0], name = course[1], description = course[2])
             tab.append(c)
         cursor.close()
         return tab
@@ -237,7 +238,7 @@ class Database(object):
             return None 
         tab = []
         for group in groups:
-            g = Group(
+            g = models.Group(
                     groupId = group[0],
                     subjectId = group[1],
                     teacherId = group[2])
@@ -275,7 +276,7 @@ class Database(object):
             return None  
         tab = []
         for lesson in lessons:
-            l = Lesson(
+            l = models.Lesson(
                     groupId = lesson[0],
                     classroom = lesson[1],
                     dateValue = lesson[2],
@@ -302,3 +303,10 @@ class Database(object):
         cursor.execute(insert_query, (message_data.userGId, message_data.groupId, message_data.message))
         self.connection.commit()
         cursor.close()
+
+
+db = Database(hostName=hostName,
+                  port=port,
+                  userName=userName,
+                  password=password,
+                  database=database)
