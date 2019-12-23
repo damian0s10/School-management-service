@@ -293,12 +293,130 @@ class Database(object):
         self.connection.commit()
         cursor.close()
 
+    def getMatches(self, groupId='', studentId='', active='', limit=10, index=0):
+        cursor = self.connection.cursor()
+        get_query='''SELECT groupId,
+                            studentId,
+                            matchId,
+                            active
+                    FROM matches
+                    WHERE (groupId= %s OR studentId= %s OR active= %s)
+                    LIMIT %s OFFSET %s 
+                 '''
+        cursor.execute(get_query, (groupId,
+                                   studentId,
+                                   active,
+                                   limit,
+                                   index))
+        matches = cursor.fetchall()
+        if not matches:
+            cursor.close()
+            return None
+        match_list = []
+        for match in matches:
+            m = models.Match(
+                             groupId = match[0],
+                             studentId = match[1],
+                             matchId = match[2],
+                             active = match[3])
+            match_list.append(m)
+        cursor.close()
+        return match_list
+        
+
+            
+        
+        
+
 
 ########################## Message #################
 
     def insertMessage(self, message_data):
         cursor = self.connection.cursor()
-        insert_query="INSERT INTO messages (userGId, groupId, message) VALUES (%s,%s,%s)"
-        cursor.execute(insert_query, (message_data.userGId, message_data.groupId, message_data.message))
+        insert_query='''INSERT INTO messages(userGId,
+                                             groupId,
+                                             message,
+                                             title,
+                                             date,
+                                             author) 
+                                        VALUES (%s, %s, %s, %s, %s, %s)'''
+        cursor.execute(insert_query, (message_data.userGId,
+                                      message_data.groupId,
+                                      message_data.message,
+                                      message_data.title,
+                                      message_data.date,
+                                      message_data.author))
         self.connection.commit()
         cursor.close()
+
+
+    def getMessage(self, messageId):
+        cursor = self.connection.cursor()
+        get_query = ''' SELECT 
+                             userGId,
+                             author,
+                             title,
+                             groupId,   
+                             message,
+                             date 
+                        FROM messages
+                        WHERE messageId = %s'''
+        cursor.execute(get_query, (messageId,))
+        result = cursor.fetchone()
+        if not result: 
+            cursor.close()
+            return None
+
+        message = models.Message(userGId=result[0],
+                                 author=result[1],
+                                 title=result[2],
+                                 groupId=result[3],
+                                 message=result[4],
+                                 date=result[5])
+        cursor.close()
+        return message
+        
+
+        
+
+
+    def getMessages(self, groupId = '', userGId = '', limit = 10, index = 0):
+        cursor = self.connection.cursor()
+        get_query ='''SELECT 
+                            userGId,
+                            author,
+                            title,
+                            groupId,
+                            message,
+                            date,
+                            messageId
+                        FROM messages
+                        WHERE (groupId=%s OR userGId=%s)
+                        LIMIT %s OFFSET %s 
+                 '''
+        cursor.execute(get_query,
+                      (groupId,
+                       userGId,
+                       limit,
+                       index))
+        messages = cursor.fetchall()
+        if not messages:
+            cursor.close()
+            return None
+        
+        m_list = []
+        for message in messages:
+            m = models.Message(
+                               userGId = message[0],
+                               author = message[1],
+                               title = message[2],
+                               groupId = message[3],
+                               message = message[4],
+                               date = message[5],
+                               messageId = message[6])
+            m_list.append(m)
+        cursor.close()
+        return m_list
+
+
+        

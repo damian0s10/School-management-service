@@ -80,6 +80,19 @@ matches='''
     FOREIGN KEY(groupId) REFERENCES groups(groupId)
     );
     '''
+messages = '''
+    CREATE TABLE messages(
+                          messageId int NOT NULL AUTO_INCREMENT,
+                          userGId varchar(50) NOT NULL,
+                          author varchar(50) NOT NULL,
+                          title varchar(50) NOT NULL,
+                          groupId int NOT NULL,
+                          message varchar(500),
+                          date datetime NOT NULL,
+                          FOREIGN KEY(groupId) REFERENCES groups(groupId),
+                          PRIMARY KEY(messageId)
+                          )'''
+
 
 
 def add_query_to_set(*args):
@@ -109,6 +122,7 @@ add_query_to_set(users,
                 attendances,
                 grades,
                 matches,
+                messages,
                 )
 
 setup()

@@ -52,6 +52,9 @@ class AdminUsersView(UserView):
             except Exception as e:
                 print(e)
                 logging.exception("Connection to database failed")
+                return render_template(template,
+                                       firstName=session['first_name'],
+                                       lastName=session['last_name'])
         return flask.redirect("/")
 
     def post(self):

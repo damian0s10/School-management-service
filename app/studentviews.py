@@ -59,3 +59,47 @@ class StudentLessonsView(UserView):
                 print(e)
                 logging.exception("Connection to database failed")    
         return flask.redirect("/")
+
+class StudentNewsView(UserView):
+    def get(self, template = "news_list.html"):
+        if self.permission != "student": return flask.redirect("/")
+        groups = []
+        try:
+            studentGId = session["userGId"]
+            matches = self.db.getMatches(studentId=studentGId)
+
+            if not matches: return "Nie zapisałeś się do żadnej grupy"
+            for match in matches:
+                groups.append(match.groupId)
+
+            lists = []
+            for i in range(len(groups)-1):
+                lists.append(self.db.getMessages(groupId = groups[i]))
+
+            if not lists:
+                return "Nie masz żadnych wiadomości od prowadzących"
+        except Exception as e:
+            print(e)
+            logging.exception("ERROR")
+
+        return render_template(template,
+                               lists = lists,
+                               firstName=session['first_name'],
+                               lastName=session['last_name'])
+                               
+    
+class StudentMessage(UserView):
+    def get(self, messageId, template = "message_detail.hmtl"):
+        if self.permission != "student": return flask.redirect('/')
+        try:
+            message = self.db.getMessage(messageId = messageId)
+        except Exception as e:
+            print(e)
+            logging.exception("ERROR")
+        if not message: return "Nie udało się pobrać wiadomości"
+        return render_template("message_detail.html",
+                               message = message,
+                               firstName=session['first_name'],
+                               lastName=session['last_name'])
+        
+
