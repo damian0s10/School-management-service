@@ -67,12 +67,10 @@ class StudentNewsView(UserView):
         try:
             studentGId = session["userGId"]
             matches = self.db.getMatches(studentId=studentGId)
+
             if not matches: return "Nie zapisałeś się do żadnej grupy"
             for match in matches:
                 groups.append(match.groupId)
-
-            if not groups:
-                return "Nie zapisałeś się do żadnej grupy"
 
             lists = []
             for i in range(len(groups)-1):
@@ -82,7 +80,7 @@ class StudentNewsView(UserView):
                 return "Nie masz żadnych wiadomości od prowadzących"
         except Exception as e:
             print(e)
-            logging.exception("Connection to database failed")
+            logging.exception("ERROR")
 
         return render_template(template,
                                lists = lists,
@@ -97,8 +95,8 @@ class StudentMessage(UserView):
             message = self.db.getMessage(messageId = messageId)
         except Exception as e:
             print(e)
-            logging.exception("Connection to database failed")
-        if not message: return "cos nie tak"
+            logging.exception("ERROR")
+        if not message: return "Nie udało się pobrać wiadomości"
         return render_template("message_detail.html",
                                message = message,
                                firstName=session['first_name'],
