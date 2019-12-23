@@ -1,0 +1,15 @@
+{% extends "student_view.html" %}
+
+{% block content %}
+    {% for list in lists %}
+        {% for message in list %}
+            <a href = "{{ '/student/message/%s'%message.messageId }}" method = "GET">
+                <div clas="message">
+                    <div class="messageTitle"><p>Tytuł wiadomości: {{ message.title }}</p></div>
+                    <div class="messageAuthor"><p>Autor: {{ message.author }}</p></div>
+                    <div class="messageDate"><p>Data: {{ message.date }}</p></div>
+                </div>
+            </a>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}

@@ -36,7 +36,12 @@ class Lesson(object):
         self.timeValue = timeValue
 
 class Message(object):
-    def __init__(self, userGId, groupId, message):
+    def __init__(self, userGId, groupId, message, title, author, date, messageId=None):
         self.userGId = userGId
         self.groupId = groupId
         self.message = message
+        self.title = title
+        self.author = author
+        self.date = date
+        self.messageId = messageId
+

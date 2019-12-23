@@ -3,6 +3,7 @@ from flask import request, session, render_template, g, redirect
 import models 
 import logging
 from adminviews import UserView
+from datetime import datetime
 
 
 class TeacherView(UserView):
@@ -27,7 +28,15 @@ class TeacherCreateMessageView(UserView):
         if self.permission == "teacher":
             groupId = request.form.get("groupId", "")
             message = request.form.get("message", "")
-            m = models.Message(userGId = session["userGId"], groupId = groupId, message = message)
+            title = request.form.get("title", "")
+            author = session["first_name"] + " " + session["last_name"]
+            m_date = datetime.now()
+            m = models.Message(userGId = session["userGId"],
+                               groupId = groupId,
+                               message = message,
+                               title = title,
+                               author = author,
+                               date = m_date)
             try:
                 self.db.insertMessage(m)
                 return flask.redirect("/news")
@@ -35,3 +44,6 @@ class TeacherCreateMessageView(UserView):
                 print(e)
                 logging.exception("Connection to database failed")
         return flask.redirect("/")
+
+
+
