@@ -54,6 +54,10 @@ if __name__ == '__main__':
     app.add_url_rule('/admin/creategroup/', view_func=adminCreateGroupView, methods=['GET',])
     app.add_url_rule('/admin/creategroup/', view_func=adminCreateGroupView, methods=['POST',])
 
+    adminCreateLessonsView = adminviews.AdminCreateLessonsView.as_view('adminCreateLessonsView', database = db)
+    app.add_url_rule('/admin/createlessons/', view_func=adminCreateLessonsView, methods=['GET',])
+    app.add_url_rule('/admin/createlessons/', view_func=adminCreateLessonsView, methods=['POST',])
+
     studentCoursesView = studentviews.StudentCoursesView.as_view('studentCoursesView', database = db)
     app.add_url_rule('/student/courses/', view_func=studentCoursesView, methods=['GET',])
     app.add_url_rule('/student/courses/', view_func=studentCoursesView, methods=['POST',])

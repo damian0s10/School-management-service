@@ -3,7 +3,7 @@ from flask import request, session, render_template, g
 import models
 from flask.views import MethodView
 import logging
-
+from datetime import datetime, timedelta
 
 
 class UserView(MethodView):
@@ -175,3 +175,39 @@ class AdminCreateGroupView(UserView):
             logging.exception("Connection to database failed")
             return flask.redirect("/")
         return flask.redirect("/admin/")
+
+class AdminCreateLessonsView(UserView):
+    def get(self, template="admin_create_lessons.html"):
+        if self.permission == "admin":
+            try:
+                groups = self.db.getGroups(all=1)
+                return render_template(template,groups = groups, firstName=session['first_name'], lastName=session['last_name'])
+            except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
+                return flask.redirect("/")
+        return flask.redirect("/")
+
+    def post(self, template="admin_lessons_created.html"):
+        
+        groupId = request.form.get("groupId", "")
+        date = request.form.get("firstDay", "")
+        quantity = request.form.get("quantity", "")
+        classroom = request.form.get("classroom", "")
+        timeValue = request.form.get("timeValue", "")
+        timeValue = timeValue+":00"
+         
+        format =  '%Y-%m-%d'
+        for i in range(int(quantity)):
+            datestr = datetime.strptime(date, format) + timedelta(days=7)
+            date = str(datestr.year)+'-'+str(datestr.month)+'-'+str(datestr.day)
+            lesson = models.Lesson(groupId = groupId, classroom = classroom, dateValue = date, timeValue = timeValue)
+            try:
+                self.db.insertLesson(lesson)
+            except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
+                return flask.redirect("/")
+        return render_template(template, firstName=session['first_name'], lastName=session['last_name'])
+        
+        
