@@ -87,7 +87,7 @@ messages = '''
                           author varchar(50) NOT NULL,
                           title varchar(50) NOT NULL,
                           groupId int NOT NULL,
-                          message varchar(500),
+                          message varchar(1000),
                           date datetime NOT NULL,
                           FOREIGN KEY(groupId) REFERENCES groups(groupId),
                           PRIMARY KEY(messageId)
