@@ -1,0 +1,17 @@
+{% extends "admin_view.html" %}
+{% block content %}
+<p>Create lessons</p>
+<form action="/admin/createlessons/" method="POST">
+    Numer grupy:
+    <select name="groupId">
+        {% for group in groups %}
+        <option value="{{ group.groupId }}">Grupa numer: {{ group.groupId}}</option>
+        {% endfor %}
+    </select>
+Numer sali: <input type="text" name="classroom" required>
+Termin pierwszych zajęć: <input type="date" name="firstDay" required>
+Godzina: <input type="time"  min="08:00" max="20:00" value="00:00"  name="timeValue" required>
+Liczba zajęć: <input type="number" name="quantity" required min="1" max="20" step="1">
+    <button type="submit" class="redButton">Dodaj</button>
+</form>
+{% endblock %}
