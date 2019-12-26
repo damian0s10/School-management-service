@@ -1,0 +1,22 @@
+{% extends "student_view.html" %}
+{% block content %}
+<div class="plan">
+    <h2>Plan zajęć</h2> 
+    <p class="dates">od {{ date_start }} do {{ date_stop }}</p>
+    <div>
+        <a href="{{ '/student/plan/%s'%last_week }}" class="redButton">Poprzedni tydzień</a>
+        <a href="{{ '/student/plan/%s'%next_week }}" class="redButton">Następny tydzień</a>
+    </div>
+
+    {% for lesson in lessons %}
+    <div class="lesson">
+        <h3>{{ lesson.dayOfWeek }}</h3>
+        <p>{{ lesson.subject }}</p>
+        <p>{{ lesson.dateValue }}</p>
+        <p>Godzina: {{ lesson.timeValue }}</p>
+        <p>Sala: {{ lesson.classroom }}</p>
+        
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

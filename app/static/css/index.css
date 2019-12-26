@@ -232,3 +232,10 @@ main .container {
     text-align: center;
     padding: 10px;
 }
+.dates {
+    margin: 10px;
+}
+.plan {
+    padding: 20px;
+    text-align: center;
+}

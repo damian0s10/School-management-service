@@ -260,14 +260,21 @@ class Database(object):
 ######################################### LESSON ####################################
 
 
-    def getLessons(self, groupId, limit = 5, index = 0):
+    def getLessons(self, groupId, date_start = "", date_stop = "", limit = 20, index = 0):
         cursor = self.connection.cursor()
-        get_query='''SELECT groupId,
-                    classroom,
-                    dateValue,
-                    timeValue
-                    FROM lessons WHERE groupId= %s LIMIT %s OFFSET %s'''
-        cursor.execute(get_query, (groupId, limit, index))        
+        get_query=''' SELECT lessons.groupId,
+                    lessons.classroom,
+                    lessons.dateValue,
+                    lessons.timeValue,
+                    subjects.name,
+                    DAYOFWEEK(lessons.dateValue)
+                    FROM ((groups
+                    INNER JOIN lessons ON groups.groupId = lessons.groupId)
+                    INNER JOIN subjects ON groups.subjectId = subjects.subjectId)
+                    WHERE lessons.groupId = %s AND lessons.dateValue BETWEEN CAST(%s AS DATE) AND CAST(%s AS DATE) 
+                    LIMIT %s OFFSET %s'''
+
+        cursor.execute(get_query, (groupId, date_start, date_stop, limit, index))        
         lessons = cursor.fetchall()
         
         if not lessons:
@@ -279,7 +286,9 @@ class Database(object):
                     groupId = lesson[0],
                     classroom = lesson[1],
                     dateValue = lesson[2],
-                    timeValue = lesson[3])
+                    timeValue = lesson[3],
+                    subject = lesson[4],
+                    dayOfWeek = lesson[5])
             tab.append(l)
         cursor.close()
         return tab 

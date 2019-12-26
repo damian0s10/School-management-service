@@ -3,6 +3,7 @@ from flask import request, session, render_template, g, redirect
 import models 
 import logging
 from adminviews import UserView
+from datetime import datetime, timedelta
 
 
 class StudentView(UserView):
@@ -39,8 +40,15 @@ class StudentGroupsView(UserView):
 class StudentLessonsView(UserView):
     def get(self, groupId, template="student_lessons.html"):
         if self.permission == "student":
+            now = datetime.now()
+            date = str(now.year)+'-'+str(now.month)+'-'+str(now.day)
+            format =  '%Y-%m-%d'
+            date_start = datetime.strptime(date, format)
+            date_start = str(date_start.year)+'-'+str(date_start.month)+'-'+str(date_start.day)
+            date_stop = datetime.strptime(date, format) + timedelta(days=60)
+            date_stop = str(date_stop.year)+'-'+str(date_stop.month)+'-'+str(date_stop.day)
             try:
-                lessons = self.db.getLessons(groupId)
+                lessons = self.db.getLessons(groupId = groupId, date_start = date_start, date_stop = date_stop)
                 return render_template(template, lessons = lessons,firstName=session['first_name'], lastName=session['last_name'])
             except Exception as e:
                 print(e)
@@ -102,4 +110,31 @@ class StudentMessage(UserView):
                                firstName=session['first_name'],
                                lastName=session['last_name'])
         
-
+class StudentPlanView(UserView):
+    def get(self, template="student_plan.html",week = 0):
+        if self.permission != "student": return flask.redirect('/')
+        studentGId = session["userGId"]
+        now = datetime.now()
+        date = str(now.year)+'-'+str(now.month)+'-'+str(now.day)
+        format =  '%Y-%m-%d'
+        print(now.weekday())
+        date_start = datetime.strptime(date, format) + timedelta(days=7*int(week)-now.weekday())
+        date_start = str(date_start.year)+'-'+str(date_start.month)+'-'+str(date_start.day)
+        date_stop = datetime.strptime(date, format) + timedelta(days=6+7*int(week)-now.weekday())
+        date_stop = str(date_stop.year)+'-'+str(date_stop.month)+'-'+str(date_stop.day)
+        days = ["Niedziela", "Poniedziałek" , "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"]
+        try:
+            all_lessons = []
+            groups = self.db.getMatches(studentId=studentGId, active=1)
+            for group in groups:
+                lessons = self.db.getLessons(groupId = group.groupId, date_start = date_start, date_stop = date_stop)
+                if lessons: 
+                    for lesson in lessons:
+                        lesson.dayOfWeek = days[lesson.dayOfWeek-1]
+                    all_lessons.extend(lessons)
+        except Exception as e:
+            print(e)
+            logging.exception("ERROR")    
+       
+        all_lessons.sort(key=lambda o: o.dateValue)
+        return render_template(template, date_start = date_start, date_stop = date_stop, last_week = int(week)-1, next_week= int(week) + 1, lessons = all_lessons, firstName=session['first_name'],lastName=session['last_name'])
