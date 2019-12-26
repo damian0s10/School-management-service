@@ -195,13 +195,12 @@ class AdminCreateLessonsView(UserView):
         quantity = request.form.get("quantity", "")
         classroom = request.form.get("classroom", "")
         timeValue = request.form.get("timeValue", "")
-        timeValue = timeValue+":00"
          
         format =  '%Y-%m-%d'
         for i in range(int(quantity)):
-            datestr = datetime.strptime(date, format) + timedelta(days=7)
-            date = str(datestr.year)+'-'+str(datestr.month)+'-'+str(datestr.day)
-            lesson = models.Lesson(groupId = groupId, classroom = classroom, dateValue = date, timeValue = timeValue)
+            datestr = datetime.strptime(date, format) + timedelta(days=7*i)
+            lesson_date = str(datestr.year)+'-'+str(datestr.month)+'-'+str(datestr.day)
+            lesson = models.Lesson(groupId = groupId, classroom = classroom, dateValue = lesson_date, timeValue = timeValue)
             try:
                 self.db.insertLesson(lesson)
             except Exception as e:

@@ -75,9 +75,11 @@ if __name__ == '__main__':
     studentNewsView = studentviews.StudentNewsView.as_view('studentNewsView', database = db)
     app.add_url_rule('/student/news', view_func=studentNewsView, methods=['GET',])
     
-    studentMessageView =  studentviews.StudentMessage.as_view('studentMessage', database = db)
+    studentMessageView = studentviews.StudentMessage.as_view('studentMessage', database = db)
     app.add_url_rule('/student/message/<messageId>', view_func=studentMessageView, methods=['GET',])
     
+    studentPlanView = studentviews.StudentPlanView.as_view('studentPlanView', database = db)
+    app.add_url_rule('/student/plan/<week>', view_func=studentPlanView, methods=['GET',])
     
     teacherView = teacherviews.TeacherView.as_view('teacher_view', database = db)
     app.add_url_rule('/teacher/', view_func=teacherView, methods=['GET',])
