@@ -84,7 +84,15 @@ if __name__ == '__main__':
     teacherView = teacherviews.TeacherView.as_view('teacher_view', database = db)
     app.add_url_rule('/teacher/', view_func=teacherView, methods=['GET',])
 
+    teacherGroupsView = teacherviews.TeacherGroupsView.as_view('teacherGroupsView', database = db)
+    app.add_url_rule('/teacher/groups/', view_func=teacherGroupsView, methods=['GET',])
 
+    teacherLessonsView = teacherviews.TeacherLessonsView.as_view('teacherLessonsView', database = db)
+    app.add_url_rule('/teacher/groups/lessons/<groupId>', view_func=teacherLessonsView, methods=['GET',])
+
+    teacherAttendancesListView = teacherviews.TeacherAttendanceListView.as_view('teacherAttendancesListView', database = db)
+    app.add_url_rule('/teacher/groups/lessons/attendances/<lessonId>', view_func=teacherAttendancesListView, methods=["GET",])
+    app.add_url_rule('/teacher/lessons/attendances/', view_func=teacherAttendancesListView, methods=["POST",])
 
     teacherCreateMessageView = teacherviews.TeacherCreateMessageView.as_view('teacherCreateMessageView', database = db)
     app.add_url_rule('/message/', view_func=teacherCreateMessageView, methods=['GET',])

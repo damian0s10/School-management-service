@@ -29,13 +29,14 @@ class Course(object):
         self.subjectId = subjectId
 
 class Lesson(object):
-    def __init__(self, groupId, classroom, dateValue, timeValue, dayOfWeek = None, subject = None):
+    def __init__(self, groupId, classroom, dateValue, timeValue, dayOfWeek = None, subject = None, lessonId = None):
         self.groupId = groupId
         self.classroom = classroom
         self.dateValue = dateValue
         self.timeValue = timeValue
         self.dayOfWeek = dayOfWeek
         self.subject = subject
+        self.lessonId = lessonId
 
 class Message(object):
     def __init__(self, userGId, groupId, message, title, author, date, messageId=None):
@@ -46,4 +47,11 @@ class Message(object):
         self.author = author
         self.date = date
         self.messageId = messageId
+
+class Attendance(object):
+    def __init__(self, lessonId, studentId, attendance = 0, attendanceId = None):
+        self.lessonId = lessonId
+        self.studentId = studentId
+        self.attendance = attendance
+        self.attendanceId = attendanceId
 
