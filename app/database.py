@@ -262,7 +262,9 @@ class Database(object):
 
     def getLessons(self, groupId, date_start = "", date_stop = "", limit = 20, index = 0):
         cursor = self.connection.cursor()
-        get_query=''' SELECT lessons.groupId,
+        get_query=''' SELECT 
+                    lessons.lessonId,
+                    lessons.groupId,
                     lessons.classroom,
                     lessons.dateValue,
                     lessons.timeValue,
@@ -283,12 +285,13 @@ class Database(object):
         tab = []
         for lesson in lessons:
             l = models.Lesson(
-                    groupId = lesson[0],
-                    classroom = lesson[1],
-                    dateValue = lesson[2],
-                    timeValue = lesson[3],
-                    subject = lesson[4],
-                    dayOfWeek = lesson[5])
+                    lessonId = lesson[0],
+                    groupId = lesson[1],
+                    classroom = lesson[2],
+                    dateValue = lesson[3],
+                    timeValue = lesson[4],
+                    subject = lesson[5],
+                    dayOfWeek = lesson[6])
             tab.append(l)
         cursor.close()
         return tab 
@@ -300,7 +303,28 @@ class Database(object):
         self.connection.commit()
         cursor.close()
 
-########################## Matches ################################
+    def getLesson(self, groupId='', dateValue='', timeValue='', lessonId=''):
+        cursor = self.connection.cursor(buffered = True)
+        get_query = '''SELECT
+                        lessonId,
+                        groupId,
+                        classroom, 
+                        dateValue, 
+                        timeValue
+                    FROM lessons WHERE (groupId = %s AND dateValue = %s AND timeValue = %s) OR lessonId = %s'''
+        cursor.execute(get_query, (groupId, dateValue, timeValue, lessonId))
+        result = cursor.fetchone()
+        lesson = models.Lesson(
+                                lessonId = result[0],
+                                groupId = result[1],
+                                classroom = result[2],
+                                dateValue = result[3],
+                                timeValue = result[4])
+        cursor.close()
+        return lesson
+
+
+########################## MATCH ################################
 
     def insertMatch(self, match_data):
         cursor = self.connection.cursor()
@@ -345,7 +369,7 @@ class Database(object):
         
 
 
-########################## Message #################
+########################## MESSAGE ####################
 
     def insertMessage(self, message_data):
         cursor = self.connection.cursor()
@@ -434,5 +458,46 @@ class Database(object):
         cursor.close()
         return m_list
 
+################################# ATTENDANCE ##################################
 
-        
+    def insertAttendance(self, attendance_data, attendance = 0):
+        cursor = self.connection.cursor()
+        insert_query = '''INSERT INTO
+                          attendances(lessonId, studentId, attendance)
+                          VALUES (%s, %s, %s)'''
+        cursor.execute(insert_query, (attendance_data.lessonId, attendance_data.studentId, attendance))
+        self.connection.commit()
+        cursor.close()
+
+    def updateAttendance(self, attendance_data, lessonId, studentId):
+        cursor = self.connection.cursor()
+        update_query = '''UPDATE attendances
+                            SET 
+                                attendance = %s
+                            WHERE (lessonId = %s AND studentId = %s) '''
+        cursor.execute(update_query, (
+                                    attendance_data.attendance,
+                                    lessonId,
+                                    studentId))
+        self.connection.commit()
+        cursor.close()
+
+
+    def getAttendance(self, lessonId='', studentId=''):
+        cursor = self.connection.cursor(buffered=True)
+        get_query='''SELECT 
+                        lessonId,
+                        studentId, 
+                        attendance,
+                        attendanceId 
+                    FROM attendances 
+                    WHERE lessonId=%s AND studentId =%s'''
+        cursor.execute(get_query, (lessonId, studentId))
+        result = cursor.fetchone()
+        attendance = models.Attendance(
+                                        lessonId=lessonId,
+                                        studentId=studentId,
+                                        attendance=result[2],
+                                        attendanceId=result[3])
+        cursor.close()
+        return attendance

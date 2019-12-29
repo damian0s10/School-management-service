@@ -195,6 +195,7 @@ class AdminCreateLessonsView(UserView):
         quantity = request.form.get("quantity", "")
         classroom = request.form.get("classroom", "")
         timeValue = request.form.get("timeValue", "")
+        lessons_list = []
          
         format =  '%Y-%m-%d'
         for i in range(int(quantity)):
@@ -203,10 +204,23 @@ class AdminCreateLessonsView(UserView):
             lesson = models.Lesson(groupId = groupId, classroom = classroom, dateValue = lesson_date, timeValue = timeValue)
             try:
                 self.db.insertLesson(lesson)
+                lessons_list.append(self.db.getLesson(groupId=groupId, dateValue=lesson_date, timeValue=timeValue))
             except Exception as e:
                 print(e)
                 logging.exception("Connection to database failed")
                 return flask.redirect("/")
+        
+        try:
+            matches = self.db.getMatches(groupId)
+            for lesson in lessons_list:
+                for match in matches:
+                    a=models.Attendance(
+                                        studentId=match.studentId,
+                                        lessonId = lesson.lessonId)
+                    self.db.insertAttendance(a)
+        except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
+                return flask.redirect("/")
+
         return render_template(template, firstName=session['first_name'], lastName=session['last_name'])
-        
-        

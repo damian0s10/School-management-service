@@ -1,0 +1,22 @@
+{% extends "teacher_view.html" %}
+{% block content %}
+    <h2>Terminy zajęć: </h2>
+    {% for lesson in lessons %}
+        <a href = "{{ '/teacher/groups/lessons/attendances/%s'%lesson.lessonId}} " method = "GET">
+            <div class="lesson">
+                <p>{{ lesson.dateValue }}</p>
+                <p>Godzina: {{ lesson.timeValue }}</p>
+                <p>Sala: {{ lesson.classroom }}</p>
+            </div>
+        </a>
+    {% endfor %}
+
+{% endblock %}
+
+{% block sidebar %}
+<a href="/news">Aktualności</a>
+<a href="/courses">Kursy</a>
+<a href="{{ '/teacher/grades/%s'%groupId }} " method = "GET">Oceny</a>
+<a href="/message/">Wyślij wiadomość</a>
+    
+{% endblock %}

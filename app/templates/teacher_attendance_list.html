@@ -1,0 +1,21 @@
+{% extends "teacher_view.html" %}
+{% block content %}
+    <form action = "/teacher/lessons/attendances/" method="POST">
+        <p>Lista obecności</p>
+        {% for student in students %}
+            <div>
+                <label> {{ student.firstName}} {{student.lastName}}
+                    <input type="checkbox" name="{{ student.userGId }}" value= "{{ student.userGId }}">
+                {% if student.userGId in present %}
+                    <p>Obecny</p>
+                {% else %}
+                    <p>Nieobecny</p>
+                {% endif %}
+                </label>
+            </div>
+        {% endfor %}
+        <input name="lessonId"  type = "text" value = "{{ lessonId }}" hidden> 
+        <div><input class="redButton" type='submit' value='Zatwierdź'></div>
+    </form>
+
+{% endblock %}
