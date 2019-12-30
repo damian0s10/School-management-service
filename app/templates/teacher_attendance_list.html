@@ -5,7 +5,7 @@
         {% for student in students %}
             <div>
                 <label> {{ student.firstName}} {{student.lastName}}
-                    <input type="checkbox" name="{{ student.userGId }}" value= "{{ student.userGId }}">
+                    <input type="checkbox" name="{{ student.userGId }}" {% if student.userGId in present %} checked {% endif %} value= "{{ student.userGId }}">
                 {% if student.userGId in present %}
                     <p>Obecny</p>
                 {% else %}
