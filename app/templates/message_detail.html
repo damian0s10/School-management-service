@@ -1,9 +1,10 @@
 {% extends "student_view.html" %}
 
 {% block content %}
+<div class="message">
     <h2>{{ message.title }}</h2><br>
     <p>{{ message.message }}</p><br>
     <p></p>Data: {{ message.date }}</p>
     <p>Autor: {{ message.author }}</p><br>
-    
+</div>   
 {% endblock %}

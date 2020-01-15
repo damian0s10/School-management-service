@@ -14,9 +14,8 @@
 {% endblock %}
 
 {% block sidebar %}
-<a href="/news">Aktualności</a>
-<a href="/courses">Kursy</a>
-<a href="{{ '/teacher/grades/%s'%groupId }} " method = "GET">Oceny</a>
-<a href="/message/">Wyślij wiadomość</a>
+<a class='nav_item' href="/teacher/groups">Twoje grupy</a>
+<a class='nav_item' href="{{ '/teacher/grades/%s'%groupId }} " method = "GET">Oceny</a>
+<a class='nav_item' href="/message/">Wyślij wiadomość</a>
     
 {% endblock %}

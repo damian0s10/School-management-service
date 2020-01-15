@@ -1,11 +1,10 @@
 {% extends "admin_view.html" %}
 {% block content %}
-<p>Create lessons</p>
 <form action="/admin/createlessons/" method="POST">
     Numer grupy:
     <select name="groupId">
         {% for group in groups %}
-        <option value="{{ group.groupId }}">Grupa numer: {{ group.groupId}}</option>
+        <option value="{{ group.groupId }}">{{ group.subject_name }} Grupa numer: {{ group.groupId}}</option>
         {% endfor %}
     </select>
 Numer sali: <input type="text" name="classroom" required>

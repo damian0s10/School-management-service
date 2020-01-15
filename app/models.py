@@ -9,18 +9,21 @@ class User(object):
         self.active = active
     
 class Group(object):
-    def __init__(self, subjectId, teacherId, groupId=None, active=True):
+    def __init__(self, subjectId, teacherId, groupId=None, active=True, subject_name=None):
         self.groupId = groupId
         self.active = active
         self.subjectId = subjectId
         self.teacherId = teacherId
+        self.subject_name = subject_name
 
 class Match(object):
-    def __init__(self, groupId, studentId, matchId=None,active=True):
+    def __init__(self, groupId, studentId, matchId=None,active=True, firstName =None, lastName = None):
         self.groupId = groupId
         self.studentId = studentId
         self.matchId = matchId
         self.active = active
+        self.firstName = firstName
+        self.lastName = lastName
 
 class Course(object):
     def __init__(self, name,description, subjectId=None):
@@ -55,3 +58,12 @@ class Attendance(object):
         self.attendance = attendance
         self.attendanceId = attendanceId
 
+class Grade(object):
+    def __init__(self, groupId, studentId, desc, grade,gradeId = None, firstName = None, lastName = None):
+        self.groupId = groupId
+        self.studentId = studentId
+        self.grade = grade
+        self.desc = desc
+        self.gradeId = gradeId
+        self.firstName = firstName
+        self.lastName = lastName

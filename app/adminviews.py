@@ -224,3 +224,61 @@ class AdminCreateLessonsView(UserView):
                 return flask.redirect("/")
 
         return render_template(template, firstName=session['first_name'], lastName=session['last_name'])
+
+class AdminNewsView(UserView):
+    def get(self, template = "admin_news.html"):
+        try:
+            matches = self.db.getMatches(active = 0)
+            if not matches: 
+                return render_template("admin_statement.html", text = "Brak aktualności",firstName=session['first_name'], lastName=session['last_name'] )
+        except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
+                return flask.redirect("/")
+        return render_template(template,matches = matches, firstName=session['first_name'], lastName=session['last_name'] )
+
+class AdminAddToGroupView(UserView):
+    def get(self):
+        return flask.redirect("/admin/news/")
+    def post(self):
+        matchId = request.form.get("matchId", "")
+        
+        now = datetime.now()
+        date = str(now.year)+'-'+str(now.month)+'-'+str(now.day)
+        format =  '%Y-%m-%d'
+        date_start = datetime.strptime(date, format)
+        date_start = str(date_start.year)+'-'+str(date_start.month)+'-'+str(date_start.day)
+        date_stop = datetime.strptime(date, format) + timedelta(days=360)
+        date_stop = str(date_stop.year)+'-'+str(date_stop.month)+'-'+str(date_stop.day)
+
+        try:
+            self.db.updateMatch(active= 1, matchId=matchId)
+            match = self.db.getMatches(matchId = matchId)
+            groupId = match[0].groupId
+            studentId = match[0].studentId
+            lessons = self.db.getLessons(groupId = groupId, date_start = date_start, date_stop = date_stop)
+            if lessons:
+                for lesson in lessons:
+                    a=models.Attendance(
+                                        studentId=studentId,
+                                        lessonId = lesson.lessonId)
+                    self.db.insertAttendance(a)
+
+        except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
+                return flask.redirect("/")
+        return flask.redirect("/admin/news/")
+
+class AdminDeleteFromGroupView(UserView):
+    def get(self):
+        return flask.redirect("/admin/news/")
+    def post(self):
+        matchId = request.form.get("matchId", "")
+        try:
+            self.db.deleteMatch(matchId=matchId)
+        except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
+                return flask.redirect("/")
+        return flask.redirect("/admin/news/")

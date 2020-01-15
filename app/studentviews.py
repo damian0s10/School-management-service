@@ -37,6 +37,24 @@ class StudentGroupsView(UserView):
                 logging.exception("Connection to database failed")
         return flask.redirect("/")
 
+class StudentMyGroupsView(UserView):
+    def get(self):
+        if self.permission != "student": return flask.redirect('/')
+        studentGId = session["userGId"]
+        try:
+            groups = self.db.getMatches(studentId=studentGId)
+            if not groups: 
+                return render_template("student_statement.html", text = "Nie zapisałeś się do żadnej grupy",firstName=session['first_name'], lastName=session['last_name'] )
+            courses_list = []
+            for group in groups:
+                courses_list.append(self.db.getGroups(groupId = group.groupId))
+            if courses_list: 
+                return render_template("student_my_groups.html",courses = courses_list, firstName=session['first_name'], lastName=session['last_name'])
+                
+        except Exception as e:
+            print(e)
+            logging.exception("ERROR")    
+        return flask.redirect("/")
 class StudentLessonsView(UserView):
     def get(self, groupId, template="student_lessons.html"):
         if self.permission == "student":
@@ -59,13 +77,15 @@ class StudentLessonsView(UserView):
         if self.permission == "student":
             userGId = session["userGId"]
             groupId = request.form.get("groupId", "")
-            match = models.Match(groupId = groupId, studentId = userGId, active = 1)
-            try:
-                self.db.insertMatch(match)
-                return render_template(template,firstName=session['first_name'], lastName=session['last_name'])
-            except Exception as e:
-                print(e)
-                logging.exception("Connection to database failed")    
+            if(self.db.checkMatch(groupId = groupId, studentId = userGId)):
+                match = models.Match(groupId = groupId, studentId = userGId, active = 0)
+                try:
+                    self.db.insertMatch(match)
+                    return render_template(template,firstName=session['first_name'], lastName=session['last_name'])
+                except Exception as e:
+                    print(e)
+                    logging.exception("Connection to database failed") 
+            return render_template("student_statement.html", text = "Jestes już zapisany do tej grupy",firstName=session['first_name'], lastName=session['last_name'] )   
         return flask.redirect("/")
 
 class StudentNewsView(UserView):
@@ -75,17 +95,19 @@ class StudentNewsView(UserView):
         try:
             studentGId = session["userGId"]
             matches = self.db.getMatches(studentId=studentGId)
-
-            if not matches: return "Nie zapisałeś się do żadnej grupy"
+            if not matches: return render_template("student_statement.html", text = "Nie zapisałeś się do żadnej grupy",firstName=session['first_name'], lastName=session['last_name'] )
             for match in matches:
                 groups.append(match.groupId)
 
             lists = []
-            for i in range(len(groups)-1):
-                lists.append(self.db.getMessages(groupId = groups[i]))
-
+            for group in groups:
+                messages = self.db.getMessages(groupId = group)
+                if messages:
+                    for message in messages:
+                        lists.append(message)
             if not lists:
-                return "Nie masz żadnych wiadomości od prowadzących"
+                return render_template("student_statement.html", text = "Nie masz żadnych wiadomości",firstName=session['first_name'], lastName=session['last_name'] )
+            lists.sort(key=lambda o: o.date, reverse = True)
         except Exception as e:
             print(e)
             logging.exception("ERROR")
@@ -104,7 +126,7 @@ class StudentMessage(UserView):
         except Exception as e:
             print(e)
             logging.exception("ERROR")
-        if not message: return "Nie udało się pobrać wiadomości"
+        if not message: return render_template("student_statement.html", text = "Nie udało się pobrać wiadomości",firstName=session['first_name'], lastName=session['last_name'] )
         return render_template("message_detail.html",
                                message = message,
                                firstName=session['first_name'],
@@ -125,7 +147,7 @@ class StudentPlanView(UserView):
         days = ["Niedziela", "Poniedziałek" , "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"]
         try:
             all_lessons = []
-            groups = self.db.getMatches(studentId=studentGId, active=1)
+            groups = self.db.getMatches(studentId=studentGId)
             for group in groups:
                 lessons = self.db.getLessons(groupId = group.groupId, date_start = date_start, date_stop = date_stop)
                 if lessons: 
@@ -138,3 +160,43 @@ class StudentPlanView(UserView):
        
         all_lessons.sort(key=lambda o: o.dateValue)
         return render_template(template, date_start = date_start, date_stop = date_stop, last_week = int(week)-1, next_week= int(week) + 1, lessons = all_lessons, firstName=session['first_name'],lastName=session['last_name'])
+
+
+class StudentGradesView(UserView):
+    def get(self, template = "student_grades.html"):
+        if self.permission != "student": return flask.redirect('/')
+        studentGId = session["userGId"]
+        try:
+            matches = self.db.getMatches(studentId = studentGId)
+            print(matches)
+            if not matches: render_template("student_statement.html", text = "Nie jesteś zapisany do grupy",firstName=session['first_name'], lastName=session['last_name'] )
+                
+            courses_list = {}
+            for match in matches:
+                subject = self.db.getGroups(groupId = match.groupId)[0].subject_name
+                grades = self.db.getGrades(groupId = match.groupId, studentId = studentGId)
+                print(grades)
+                if not grades:
+                    grades = []
+                courses_list[subject] = grades
+        except Exception as e:
+            print(e)
+            logging.exception("ERROR")    
+        
+        return render_template(template, list = courses_list,
+                                        firstName=session['first_name'], 
+                                        lastName=session['last_name'])
+
+class StudentGradeDescView(UserView):
+    def get(self, gradeId, template="student_grade_desc.html"):
+        if self.permission != "student": return flask.redirect('/')
+        try:
+            grade = self.db.getGrades(gradeId = gradeId)
+            return render_template(template,
+                                    grade = grade,
+                                    firstName=session['first_name'], 
+                                    lastName=session['last_name'])
+        except Exception as e:
+            print(e)
+            logging.exception("ERROR")
+        return flask.redirect("/")

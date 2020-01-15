@@ -223,13 +223,17 @@ class Database(object):
 
     
 
-    def getGroups(self, subjectId = '', teacherId = '', all = 0, limit = 10, index = 0):
+    def getGroups(self, subjectId = '', teacherId = '', groupId = '', all = 0, limit = 10, index = 0):
         cursor = self.connection.cursor()
-        get_query='''SELECT groupId,
-                    subjectId,
-                    teacherId
-                    FROM groups WHERE (subjectId = %s OR teacherId = %s OR active = %s) AND active=1 LIMIT %s OFFSET %s'''
-        cursor.execute(get_query, (subjectId, teacherId, all, limit, index) )          
+        get_query='''SELECT groups.groupId,
+                    groups.subjectId,
+                    groups.teacherId,
+                    subjects.name
+                    FROM groups
+                    INNER JOIN subjects
+                    ON groups.subjectId = subjects.subjectId
+                    WHERE (groups.subjectId = %s OR groups.teacherId = %s OR groups.groupId = %s OR groups.active = %s) AND groups.active=1 LIMIT %s OFFSET %s'''
+        cursor.execute(get_query, (subjectId, teacherId, groupId, all, limit, index) )          
         groups = cursor.fetchall()
         
         if not groups:
@@ -240,7 +244,8 @@ class Database(object):
             g = models.Group(
                     groupId = group[0],
                     subjectId = group[1],
-                    teacherId = group[2])
+                    teacherId = group[2],
+                    subject_name = group[3])
             tab.append(g)
         cursor.close()
         return tab
@@ -333,18 +338,23 @@ class Database(object):
         self.connection.commit()
         cursor.close()
 
-    def getMatches(self, groupId='', studentId='', active='', limit=10, index=0):
+    def getMatches(self, groupId='', studentId='', matchId = '', active = None, limit=10, index=0):
         cursor = self.connection.cursor()
-        get_query='''SELECT groupId,
-                            studentId,
-                            matchId,
-                            active
+        get_query='''SELECT matches.groupId,
+                            matches.studentId,
+                            matches.matchId,
+                            matches.active,
+                            users.firstName,
+                            users.lastName
                     FROM matches
-                    WHERE (groupId= %s OR studentId= %s OR active= %s)
+                    INNER JOIN users
+                    ON matches.studentId = users.userGId
+                    WHERE (matches.groupId= %s OR matches.studentId= %s OR matches.matchId =%s) OR matches.active = %s 
                     LIMIT %s OFFSET %s 
                  '''
         cursor.execute(get_query, (groupId,
                                    studentId,
+                                   matchId,
                                    active,
                                    limit,
                                    index))
@@ -358,15 +368,51 @@ class Database(object):
                              groupId = match[0],
                              studentId = match[1],
                              matchId = match[2],
-                             active = match[3])
+                             active = match[3],
+                             firstName = match[4],
+                             lastName = match[5])
             match_list.append(m)
         cursor.close()
         return match_list
         
-
+    def checkMatch(self, groupId, studentId):
+        cursor = self.connection.cursor()
+        get_query='''SELECT groupId,
+                            studentId,
+                            matchId,
+                            active
+                    FROM matches
+                    WHERE groupId= %s AND studentId= %s AND active = 1
+                 '''
+        cursor.execute(get_query, (groupId,
+                                   studentId,
+                                   ))
+        match = cursor.fetchall()
+        if match:
+            cursor.close()
+            return False
+        cursor.close()
+        return True
             
+    def updateMatch(self,active,matchId):
+        cursor = self.connection.cursor()
+        update_query = '''UPDATE matches
+                            SET 
+                                active = %s
+                            WHERE matchId = %s '''
+        cursor.execute(update_query, (active,matchId))
+        self.connection.commit()
+        cursor.close()
         
-        
+    def deleteMatch(self, matchId):
+        cursor = self.connection.cursor()
+        delete_query="DELETE FROM matches WHERE matchId=%s"
+        cursor.execute(
+            delete_query,
+            (matchId,))
+        self.connection.commit()
+        cursor.close()
+
 
 
 ########################## MESSAGE ####################
@@ -501,3 +547,49 @@ class Database(object):
                                         attendanceId=result[3])
         cursor.close()
         return attendance
+
+################################# GRADES ##########################
+
+    def getGrades(self,groupId = None, studentId = None, gradeId = None):
+        cursor = self.connection.cursor()
+        get_query='''SELECT
+                        grades.gradeId,
+                        grades.groupId,
+                        grades.studentId,
+                        grades.grade,
+                        users.firstName,
+                        users.lastName,
+                        grades.des
+                    FROM grades
+                    INNER JOIN users
+                    ON grades.studentId = users.userGId
+                    WHERE (grades.groupId = %s AND grades.studentId = %s) OR grades.gradeId = %s'''
+        cursor.execute(get_query,(groupId,studentId,gradeId))
+        grades = cursor.fetchall()
+        
+        if not grades:
+            cursor.close()
+            return None
+
+        grades_list = []
+        for grade in grades:
+            g = models.Grade(
+                            gradeId = grade[0],
+                            groupId = grade[1],
+                            studentId = grade[2],
+                            grade = grade[3],
+                            firstName = grade[4],
+                            lastName = grade[5],
+                            desc = grade[6])
+            grades_list.append(g)
+        cursor.close()
+        return grades_list
+
+    def insertGrade(self,grade_data):
+        cursor = self.connection.cursor()
+        insert_query = '''INSERT INTO
+                          grades(groupId, studentId, grade, des)
+                          VALUES (%s, %s, %s, %s)'''
+        cursor.execute(insert_query, (grade_data.groupId, grade_data.studentId, grade_data.grade, grade_data.desc))
+        self.connection.commit()
+        cursor.close()

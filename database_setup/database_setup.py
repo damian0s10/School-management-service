@@ -63,11 +63,12 @@ attendances='''
 grades='''
     create table grades(
     gradeId int NOT NULL AUTO_INCREMENT,
-    subjectId int NOT NULL,
+    groupId int NOT NULL,
     studentId varchar(50) NOT NULL,
     grade int NOT NULL,
+    des varchar(1000) NOT NULL,
     PRIMARY KEY(gradeId),
-    FOREIGN KEY(subjectId) REFERENCES subjects(subjectId),
+    FOREIGN KEY(groupId) REFERENCES groups(groupId),
     FOREIGN KEY(studentId) REFERENCES users(userGId)
     );'''
 matches='''

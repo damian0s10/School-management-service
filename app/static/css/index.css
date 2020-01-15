@@ -6,6 +6,7 @@ p,a, h1, h2, h3 {
 body {
     margin: 0;
     padding: 0;
+    font-size: 14px;
 }
 .title {
     color: white;
@@ -22,6 +23,7 @@ header {
     position: sticky;
     top: 0;
     min-height: 100px;
+    padding: 5px;
 }
 .fa-bars {
     color: white;
@@ -44,11 +46,11 @@ footer p {
     background-color: #333333;
     list-style-type: none;
     margin: 0;
-    padding: 20px;
+    padding: 5px;
     text-align: center;
 }
 .menu_items .item {
-    padding: 5px 30px;
+    padding: 5px 15px;
 }
 .menu_items .item:hover {
     background-color: #660033;
@@ -68,7 +70,7 @@ footer p {
     color: white;
 }
 .nav_item {
-    padding: 10px;  
+    padding: 3px;  
     color: white; 
 }
 
@@ -80,7 +82,7 @@ main {
     rgba(165, 12, 38, 0.589) 100% ), url("../img/background.jpg");
     background-position: bottom;
     background-size: cover;
-    min-height: 550px;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
 
@@ -89,7 +91,7 @@ main .container {
     display: flex;
 }
 .content {
-    min-width: 400px;
+    
     max-width: 800px;
     margin:50px auto 50px auto;
     background: #eee;
@@ -101,7 +103,7 @@ main .container {
     margin-right: auto;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 15px;
     
 }
 .content form div {
@@ -113,12 +115,12 @@ main .container {
     margin: 10px
 }
 .content form label {
-    padding: 10px 30px 10px 30px;
+    padding: 10px 30px;
     display: flex;
     align-items: center;
 }
 .content form input {
-    margin: 0 10px 0 10px;
+    margin: 0 10px;
 }
 .content p {
     display: block;
@@ -238,4 +240,77 @@ main .container {
 .plan {
     padding: 20px;
     text-align: center;
+}
+.message {
+    padding: 20px;
+}
+.contGrade {
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+.grades {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 5px;
+    align-items: center;
+}
+.grade {
+    margin: 5px;
+}
+.containerGrade form {
+    display: flex;
+    flex-direction: row;
+}
+.containerGrade textarea {
+    width: 50px;
+}
+.studentGrades {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+}
+.courseGrades {
+    margin:20px;
+}
+.gradeCont {
+    display: flex;
+    padding: 20px;
+    flex-direction: column;
+}
+@media (max-width: 900px) {
+    .title {
+        font-size: 40px;
+    }
+    
+}
+@media (max-width: 800px) {
+    .title {
+        font-size: 30px;
+    }
+    .container {
+        flex-direction: column;
+    }
+    .sidenav {
+        flex-direction: row;
+        padding: 10px;
+    }
+    .nav_item {
+        font-size: 12px;
+    }
+}
+@media (max-width: 450px) {
+    .container form label {
+        font-size: 12px;
+        padding: 10px 0;
+    }
+    .container form {
+        padding: 5px;
+    }
+    body {
+        font-size: 12px;
+    }
 }

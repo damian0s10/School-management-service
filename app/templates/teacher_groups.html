@@ -3,7 +3,7 @@
     {% for group in groups %}
         <a href = "{{ '/teacher/groups/lessons/%s'%group.groupId}} " method = "GET">
             <div class="lesson">
-                <p>Grupa numer: {{ group.groupId }}</p>
+                <p>{{ group.subject_name }} Grupa numer: {{ group.groupId }}</p>
             </div>
         </a>
     {% endfor %}

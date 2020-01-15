@@ -2,7 +2,7 @@
 
 {% block nav %}
     <nav class="navbar_log">
-        <a class="nav_menu" href='/admin'>ADMIN {{firstName}} {{lastName}}</a>
+        <a class="nav_menu" href='/admin'>{{firstName}} {{lastName}}</a>
         <i class="fas fa-bars"></i>
         <ul class='menu_items' style="display: none;">
             <li class='item'><a href='/admin'>Mój profil</a></li>
@@ -11,16 +11,13 @@
     </nav>
 {% endblock %}
 {% block sidebar %}
-    <a href="/admin/users_management/">  Użytkownicy</a>
-    <a href="/admin/courses/">Kursy</a> 
-    <a href="/admin/createcourse/">Utwórz kurs</a>
-    <a href="/admin/creategroup/">Utwórz grupę</a>
-    <a href="/admin/createlessons/">Utwórz lekcje</a>
-    <a href="/grades">Content</a>
+    <a class='nav_item' href="/admin/news/">Aktualności</a>
+    <a class='nav_item' href="/admin/users_management/">Użytkownicy</a>
+    <a class='nav_item' href="/admin/courses/">Kursy</a> 
+    <a class='nav_item' href="/admin/createcourse/">Utwórz kurs</a>
+    <a class='nav_item' href="/admin/creategroup/">Utwórz grupę</a>
+    <a class='nav_item' href="/admin/createlessons/">Utwórz lekcje</a>
 {% endblock %}
 {% block content %}
-<h2>
-    THIS IS THE ADMIN CITE 
 
-</h2>
 {% endblock %}

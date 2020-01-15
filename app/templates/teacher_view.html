@@ -2,7 +2,7 @@
 
 {% block nav %}
     <nav class="navbar_log">
-        <a class="nav_menu" href='/teacher'>prof. {{firstName}} {{lastName}}</a>
+        <a class="nav_menu" href='/teacher'>{{firstName}} {{lastName}}</a>
         <i class="fas fa-bars"></i>
         <ul class='menu_items' style="display: none;">
             <li class='item'><a href='/teacher'>Mój profil</a></li>
@@ -11,15 +11,11 @@
     </nav>
 {% endblock %}
 {% block sidebar %}
-<a href="/news">Aktualności</a>
-<a href="/courses">Kursy</a>
-<a href="/teacher/groups">Twoje grupy</a>
-<a href="/attendances">Obecności</a>
-<a href="/message/">Wyślij wiadomość</a>
+
+<a class='nav_item' href="/teacher/groups">Twoje grupy</a>
+<a class='nav_item' href="/message/">Wyślij wiadomość</a>
     
 {% endblock %}
 {% block content %}
-<h4>
-    Witaj nauczycielu, wypij kawe i do roboty !
-</h4>
+
 {% endblock %}

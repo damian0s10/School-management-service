@@ -1,0 +1,14 @@
+{% extends "student_view.html" %}
+{% block content %}
+    {% for key, value in list.items() %}
+    <div class="studentGrades">
+        <div class="courseGrades"><b>{{ key }} :</b></div>
+        <div class="grades">
+            {% for i in value %}
+                <div class="grade"><a href="{{ '/student/grades/%s'%i.gradeId }}">{{ i.grade }}</a></div>
+            {% endfor %}
+        </div>
+    </div>
+        
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "student_view.html" %}
+{% block content %}
+{% for course in courses %}
+<div class="course">
+<p><b>Przedmiot:</b> {{ course[0].subject_name}} <b>Grupa nr:</b> {{ course[0].groupId }} </p>
+</div>
+{% endfor %}
+{% endblock %}

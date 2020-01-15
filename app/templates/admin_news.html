@@ -1,0 +1,14 @@
+{% extends "admin_view.html" %}
+{% block content %}
+{% for match in matches %}
+<div class="message">
+    <p><b>{{ match.firstName }} {{ match.lastName }}</b> wysłał prośbę o dołączenie do grupy numer {{ match.groupId }}</p>
+    <form action="/admin/news/add" method="POST">
+        <button name="matchId" type='submit' class="redButton" value="{{ match.matchId }}">Dodaj</button>
+    </form>
+    <form action="/admin/news/delete" method="POST">
+        <button name="matchId" type='submit' class="redButton" value="{{ match.matchId }}">Usuń prośbę</button>
+    </form>
+</div>
+{% endfor %}
+{% endblock %}

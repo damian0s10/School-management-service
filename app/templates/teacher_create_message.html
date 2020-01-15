@@ -4,7 +4,7 @@
     <p>Wybierz grupę, której chcesz wysłać wiadomość</p>
     <select name="groupId">
         {% for group in groups %}
-        <option value="{{ group.groupId }}">Grupa numer: {{ group.groupId}}</option>
+        <option value="{{ group.groupId }}">{{ group.subject_name }}  Grupa numer: {{ group.groupId}}</option>
         {% endfor %}
     </select>
     <label>Tytuł: <input type='text' name='title' required></label>

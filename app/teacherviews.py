@@ -39,7 +39,7 @@ class TeacherCreateMessageView(UserView):
                                date = m_date)
             try:
                 self.db.insertMessage(m)
-                return flask.redirect("/news")
+                return flask.redirect("/")
             except Exception as e:
                 print(e)
                 logging.exception("Connection to database failed")
@@ -51,6 +51,8 @@ class TeacherGroupsView(UserView):
         userGId = session['userGId']
         try:
             groups = self.db.getGroups(teacherId=userGId)
+            if not groups: 
+                return flask.redirect("/")
         except Exception as e:
             print(e)
             logging.exception("Connection to database failed")
@@ -61,19 +63,21 @@ class TeacherGroupsView(UserView):
                                 firstName=session['first_name'], 
                                 lastName=session['last_name'])
 
+
 class TeacherLessonsView(UserView):
     def get(self, groupId, template="teacher_lessons_list.html"):
         if self.permission !="teacher": return flask.redirect('/')
         now = datetime.now()
         date = str(now.year)+'-'+str(now.month)+'-'+str(now.day)
         format =  '%Y-%m-%d'
-        date_start = datetime.strptime(date, format)
+        date_start = datetime.strptime(date, format) + timedelta(days=-14)
         date_start = str(date_start.year)+'-'+str(date_start.month)+'-'+str(date_start.day)
         date_stop = datetime.strptime(date, format) + timedelta(days=60)
         date_stop = str(date_stop.year)+'-'+str(date_stop.month)+'-'+str(date_stop.day)
         try:
             lessons = self.db.getLessons(groupId = groupId, date_start = date_start, date_stop = date_stop)
-            return render_template(template, lessons = lessons,firstName=session['first_name'], lastName=session['last_name'])
+            lessons.sort(key=lambda o: o.dateValue)
+            return render_template(template, lessons = lessons,groupId = groupId, firstName=session['first_name'], lastName=session['last_name'])
         except Exception as e:
             print(e)
             logging.exception("Connection to database failed")
@@ -146,3 +150,55 @@ class TeacherAttendanceListView(UserView):
             
         return flask.redirect("/teacher/groups/lessons/attendances/"+lessonId)
 
+class TeacherGradesView(UserView):
+    def get(self, groupId, template="teacher_grades.html"):
+        if self.permission != "teacher": return flask.redirect("/")
+        dictionary = {}
+        try:
+            students = self.db.getMatches(groupId = groupId)
+            for student in students:
+                grades = self.db.getGrades(groupId = groupId, studentId = student.studentId)
+                print(grades)
+                if not grades:
+                    grades = []
+                dictionary[student] = grades
+        except Exception as e:
+                print(e)
+                logging.exception("Connection to database failed")
+                return flask.redirect("/")  
+        return render_template(template, dictionary = dictionary,
+                                        groupId = groupId,
+                                        firstName=session['first_name'], 
+                                        lastName=session['last_name']) 
+    def post(self, groupId):
+        if self.permission != "teacher": return flask.redirect("/")
+        
+        grade = request.form.get("grade", "")
+        desc = request.form.get("desc", "")
+        studentId = request.form.get("studentId", "")
+
+        g = models.Grade(groupId = groupId,
+                        studentId = studentId,
+                        grade = grade,
+                        desc = desc)
+        try:
+            self.db.insertGrade(g)
+            return flask.redirect("/")
+        except Exception as e:
+            print(e)
+            logging.exception("Connection to database failed")
+        return flask.redirect("/")
+
+class TeacherGradeDescView(UserView):
+    def get(self, gradeId, template="teacher_grade_desc.html"):
+        if self.permission != "teacher": return flask.redirect('/')
+        try:
+            grade = self.db.getGrades(gradeId = gradeId)
+            return render_template(template,
+                                    grade = grade,
+                                    firstName=session['first_name'], 
+                                    lastName=session['last_name'])
+        except Exception as e:
+            print(e)
+            logging.exception("ERROR")
+        return flask.redirect("/")

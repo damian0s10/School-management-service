@@ -36,6 +36,8 @@ if __name__ == '__main__':
     app.add_url_rule('/register/', view_func=registerView, methods=['GET',])
     app.add_url_rule('/register/', view_func=registerView, methods=['POST',])
 
+
+
     adminView = adminviews.AdminView.as_view('admin_view', database = db)
     app.add_url_rule('/admin/', view_func=adminView, methods=['GET',])
 
@@ -58,12 +60,29 @@ if __name__ == '__main__':
     app.add_url_rule('/admin/createlessons/', view_func=adminCreateLessonsView, methods=['GET',])
     app.add_url_rule('/admin/createlessons/', view_func=adminCreateLessonsView, methods=['POST',])
 
+    adminNewsView = adminviews.AdminNewsView.as_view('adminNewsView', database = db)
+    app.add_url_rule('/admin/news/', view_func=adminNewsView, methods=['GET',])
+    app.add_url_rule('/admin/news/', view_func=adminNewsView, methods=['POST',])
+
+    adminAddToGroupView = adminviews.AdminAddToGroupView.as_view('adminAddToGroupView', database = db)
+    app.add_url_rule('/admin/news/add', view_func=adminAddToGroupView, methods=['GET',])
+    app.add_url_rule('/admin/news/add', view_func=adminAddToGroupView, methods=['POST',])
+
+    adminDeleteFromGroupView = adminviews.AdminDeleteFromGroupView.as_view('adminDeleteFromGroupView', database = db)
+    app.add_url_rule('/admin/news/delete', view_func=adminDeleteFromGroupView, methods=['GET',])
+    app.add_url_rule('/admin/news/delete', view_func=adminDeleteFromGroupView, methods=['POST',])
+
+
+
     studentCoursesView = studentviews.StudentCoursesView.as_view('studentCoursesView', database = db)
     app.add_url_rule('/student/courses/', view_func=studentCoursesView, methods=['GET',])
     app.add_url_rule('/student/courses/', view_func=studentCoursesView, methods=['POST',])
 
     studentGroupsView = studentviews.StudentGroupsView.as_view('studentGroupsView', database = db)
     app.add_url_rule('/student/courses/<subjectId>', view_func=studentGroupsView, methods=['GET',])
+
+    studentMyGroupsView = studentviews.StudentMyGroupsView.as_view('studentMyGroupsView', database = db)
+    app.add_url_rule('/student/groups', view_func=studentMyGroupsView, methods=['GET',])
 
     studentView = studentviews.StudentView.as_view('student_view', database = db)
     app.add_url_rule('/student/', view_func=studentView, methods=['GET',])
@@ -81,6 +100,13 @@ if __name__ == '__main__':
     studentPlanView = studentviews.StudentPlanView.as_view('studentPlanView', database = db)
     app.add_url_rule('/student/plan/<week>', view_func=studentPlanView, methods=['GET',])
     
+    studentGradesView = studentviews.StudentGradesView.as_view('studentGradesView', database = db)
+    app.add_url_rule('/student/grades', view_func=studentGradesView, methods=['GET',])
+
+    studentGradeDescView = studentviews.StudentGradeDescView.as_view('studentGradeDescView', database = db)
+    app.add_url_rule('/student/grades/<gradeId>', view_func=studentGradeDescView, methods=['GET',])
+
+
     teacherView = teacherviews.TeacherView.as_view('teacher_view', database = db)
     app.add_url_rule('/teacher/', view_func=teacherView, methods=['GET',])
 
@@ -97,6 +123,13 @@ if __name__ == '__main__':
     teacherCreateMessageView = teacherviews.TeacherCreateMessageView.as_view('teacherCreateMessageView', database = db)
     app.add_url_rule('/message/', view_func=teacherCreateMessageView, methods=['GET',])
     app.add_url_rule('/message/', view_func=teacherCreateMessageView, methods=['POST',])
+
+    teacherGradesView = teacherviews.TeacherGradesView.as_view('teacherGradesView', database = db)
+    app.add_url_rule('/teacher/grades/<groupId>', view_func=teacherGradesView, methods=['GET',])
+    app.add_url_rule('/teacher/grades/<groupId>', view_func=teacherGradesView, methods=['POST',])
+
+    teacherGradeDescView = teacherviews.TeacherGradeDescView.as_view('teacherGradeDescView', database = db)
+    app.add_url_rule('/teacher/grade/<gradeId>', view_func=teacherGradeDescView, methods=['GET',])
 
     logoutView = adminviews.Logout.as_view("logout_view")
     app.add_url_rule('/logout/', view_func=logoutView, methods=['GET',])

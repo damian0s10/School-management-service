@@ -1,0 +1,28 @@
+{% extends "teacher_view.html" %}
+{% block content %}
+    {% for key, value in dictionary.items() %}
+    <div class="containerGrade">
+        <div class="contGrade">
+            <div class="nameGrade"><b>{{ key.firstName }} {{ key.lastName}}:</b></div>
+            <div class="grades">
+            {% for i in value %}
+                <p class="grade"><a href="{{ '/teacher/grade/%s'%i.gradeId }}">{{ i.grade }}</a></p>
+            {% endfor %}
+            </div>
+        </div>
+        <form action = "{{ '/teacher/grades/%s'%groupId }}" method="POST">
+            <select name="grade">
+                <option value ="1">1</option>
+                <option value ="2">2</option>
+                <option value ="3">3</option>
+                <option value ="4">4</option>
+                <option value ="5">5</option>
+                <option value ="5">6</option>
+            </select>
+            <textarea name="desc"></textarea>
+            <input style="display: none" type="text" name="studentId" value="{{ key.studentId }}">
+            <div ><input class="redButton" type='submit' value='Dodaj ocenę'></div>
+        </form>
+    </div>
+    {% endfor %}
+{% endblock %}
